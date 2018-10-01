@@ -39,6 +39,8 @@ This file can be found in the example/ directory of this repository.
 .jra.listen 8000
 ```
 
+This file is easy to test in postman. (Note: To send JSON in postman, use the "raw" option in the "body" tab of your request).
+
 ## Structures
 
 I construct slightly nicer structures from the interface provided automatically by .z.ph and .z.pp.
@@ -96,3 +98,9 @@ The JSON booleans, true and false, are mapped to q booleans 1b and 0b as appropr
   }
 }
 ```
+
+## Caveats
+
+1. There is no authentication. If you want that, you'll need something slightly more heavyweight.
+2. Only supports GET and POST methods.
+3. Probably buggy as fuck, I hacked it out tonight after work because I needed it for something else.
