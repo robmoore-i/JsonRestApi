@@ -1,4 +1,4 @@
-\l jsonrestapi.q
+\l ../jsonrestapi.q
 
 .get.serve["/";
   {[req]
