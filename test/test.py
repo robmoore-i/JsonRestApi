@@ -42,7 +42,7 @@ def cookie():
   res = session.get("http://localhost:8000/cookie")
   assert_that(res.status_code).is_equal_to(200)
   assert_that(res.json()).is_equal_to("Check your cookies!")
-  assert_that(session.cookies.get_dict()).is_equal_to({"sid":"maker"})
+  assert_that(session.cookies.get_dict()).is_equal_to({"sid":"s355IonT0k3n"})
 
 
 def run_test(test_name, test):

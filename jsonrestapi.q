@@ -60,3 +60,15 @@ listen:{[p]
     f:.post.endpoints["/",last "/" vs postreq.url];
     $[ null f ; jsonResponse "none" ; f postreq ]};
   system "p ",string p;}
+
+////// RESPONSE
+
+\d .res
+
+ok:{[f]
+  {[f;req]
+    .jra.jsonResponse f req}[f;]}
+
+okWithAuthCookie:{[sid;f]
+  {[sid;f;req]
+    .jra.authenticatedJsonResponse[sid;f req]}[sid;f;]}
