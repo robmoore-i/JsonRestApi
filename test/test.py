@@ -37,6 +37,14 @@ def goodbye():
   assert_that(res.json()).is_equal_to("Goodbye now python")
 
 
+def cookie():
+  session = requests.Session()
+  res = session.get("http://localhost:8000/cookie")
+  assert_that(res.status_code).is_equal_to(200)
+  assert_that(res.json()).is_equal_to("Check your cookies!")
+  assert_that(session.cookies.get_dict()).is_equal_to({"sid":"maker"})
+
+
 def run_test(test_name, test):
   try:
     print("- " + test_name)
@@ -50,17 +58,22 @@ def tests():
   run_test("hello", hello)
   run_test("json", json)
   run_test("goodbye", goodbye)
+  run_test("cookie", cookie)
 
 
-print("=== starting backend ===")
-start_backend_q()
-time.sleep(1)
+def main():
+    print("=== starting backend ===")
+    start_backend_q()
+    time.sleep(1)
 
-print("=== starting tests ===")
-tests()
+    print("=== starting tests ===")
+    tests()
 
-print("=== killing backend ===")
-kill_backend_q()
+    print("=== killing backend ===")
+    kill_backend_q()
 
-print("=== finished tests ===")
+    print("=== finished tests ===")
+
+
+main()
 exit(0)

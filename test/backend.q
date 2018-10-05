@@ -1,19 +1,26 @@
 \l ../jsonrestapi.q
 
+jr:.jra.jsonResponse
+jacr:.jra.jsonAuthCookieResponse["maker";]
+
 .get.serve["/";
   {[req]
-    raze "Hello there, my favourite browser:  ", raze req[`headers;`$"User-Agent"]}]
+    jr raze "Hello there, my favourite browser:  ", raze req[`headers;`$"User-Agent"]}]
 
 .get.serve["/hello";
   {[req]
-    "hello"}]
+    jr "hello"}]
 
 .get.serve["/json";
   {[req]
-    `a`b`c!1 2 3}]
+    jr `a`b`c!1 2 3}]
 
 .post.serve["/goodbye";
   {[req]
-    raze "Goodbye now ",raze req[`body;`name]}]
+    jr raze "Goodbye now ",raze req[`body;`name]}]
+
+.get.serve["/cookie";
+  {[req]
+    jacr "Check your cookies!"}]
 
 .jra.listen 8000

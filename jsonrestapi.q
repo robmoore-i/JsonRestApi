@@ -40,17 +40,23 @@ serve:{[path;f]endpoints,:addEndpoint[endpoints;path;f];}
 // The header for a JSON resposne
 jsonHeader:"HTTP/1.x 200 OK\r\nContent- Type:application/json\r\n\r\n"
 
+// The header for a JSON response including a cookie
+jsonAuthCookieHeader:{"HTTP/1.x 200 OK\r\nContent- Type:application/json\r\nSet-Cookie: sid=",x,"\r\n\r\n"}
+
 // Create a JSON response from a Q object
 jsonResponse:{jsonHeader,.j.j x}
+
+// Create a JSON response from a Q object including a cookie
+jsonAuthCookieResponse:{jsonAuthCookieHeader[x],.j.j y}
 
 // Start listening using the current endpoints on the given port
 listen:{[p]
   .z.ph::{
     getreq::.get.request x;
     f:.get.endpoints["/",last "/" vs getreq.url];
-    jsonResponse $[ null f ; "none" ; f getreq ]};
+    $[ null f ; jsonResponse "none" ; f getreq ]};
   .z.pp::{
     postreq::.post.request x;
     f:.post.endpoints["/",last "/" vs postreq.url];
-    jsonResponse $[ null f ; "none" ; f postreq ]};
+    $[ null f ; jsonResponse "none" ; f postreq ]};
   system "p ",string p;}
