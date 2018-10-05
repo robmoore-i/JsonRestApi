@@ -1,37 +1,37 @@
+////// ALL REQUESTS
+
+\d .jra
+
+// Append a new endpoint to the existing dictionary
+addEndpoint:{[curEndpoints;path;f]
+  path:$[1=count path;enlist path;path];
+  curEndpoints , (enlist path)!enlist f}
+
 ////// GET REQUESTS
 
 \d .get
 
-// Create a request dictionary from the dictionary passed to .z.ph
+// Create a GET request dictionary from the dictionary passed to .z.ph
 request:{`url`headers!(((x[1]`Host),"/",x 0);x 1)}
 
 // At the start, there are no assigned GET endpoints
 endpoints:()!()
 
-// Append a new GET endpoint to the existing dictionary
-addEndpoint:{[curEndpoints;path;f]
-  path:$[1=count path;enlist path;path];
-  curEndpoints , (enlist path)!enlist f}
-
 // Associate a GET endpoint with a function
-serve:{[path;f]endpoints,:addEndpoint[endpoints;path;f];}
+serve:{[path;f]endpoints,: .jra.addEndpoint[endpoints;path;f];}
 
 ////// POST REQUESTS
 
 \d .post
 
+// Create a POST request dictionary from the dictionary passed to .z.pp
 request:{s:" " vs x 0;`url`headers`body!(((x[1]`Host),"/",s 0);x 1;.j.k raze 1_s)}
 
 // At the start, there are no assigned POST endpoints
 endpoints:()!()
 
-// Append a new POST endpoint to the existing dictionary
-addEndpoint:{[curEndpoints;path;f]
-  path:$[1=count path;enlist path;path];
-  curEndpoints , (enlist path)!enlist f}
-
 // Associate a POST endpoint with a function
-serve:{[path;f]endpoints,:addEndpoint[endpoints;path;f];}
+serve:{[path;f]endpoints,: .jra.addEndpoint[endpoints;path;f];}
 
 ////// General
 
