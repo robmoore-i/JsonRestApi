@@ -1,7 +1,7 @@
 \l ../jsonrestapi.q
 
 jr:.jra.jsonResponse
-jacr:.jra.jsonAuthCookieResponse["maker";]
+jacr:.jra.authenticatedJsonResponse["maker";]
 
 .get.serve["/";
   {[req]

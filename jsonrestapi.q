@@ -41,13 +41,13 @@ serve:{[path;f]endpoints,:addEndpoint[endpoints;path;f];}
 jsonHeader:"HTTP/1.x 200 OK\r\nContent- Type:application/json\r\n\r\n"
 
 // The header for a JSON response including a cookie
-jsonAuthCookieHeader:{"HTTP/1.x 200 OK\r\nContent- Type:application/json\r\nSet-Cookie: sid=",x,"\r\n\r\n"}
+authenticatedJsonHeader:{"HTTP/1.x 200 OK\r\nContent- Type:application/json\r\nSet-Cookie: sid=",x,"\r\n\r\n"}
 
 // Create a JSON response from a Q object
 jsonResponse:{jsonHeader,.j.j x}
 
 // Create a JSON response from a Q object including a cookie
-jsonAuthCookieResponse:{jsonAuthCookieHeader[x],.j.j y}
+authenticatedJsonResponse:{authenticatedJsonHeader[x],.j.j y}
 
 // Start listening using the current endpoints on the given port
 listen:{[p]
