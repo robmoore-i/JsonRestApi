@@ -45,6 +45,14 @@ def cookie():
   assert_that(session.cookies.get_dict()).is_equal_to({"sid":"s355IonT0k3n"})
 
 
+def cors():
+  options = requests.options("http://localhost:8000/cors")
+  assert_that(options.headers["Access-Control-Allow-Origin"]).is_equal_to("http://localhost:3000")
+  assert_that(options.headers["Access-Control-Allow-Methods"]).is_equal_to("GET, POST")
+  assert_that(options.headers["Access-Control-Allow-Headers"]).is_equal_to("Content-Type")
+  assert_that(options.status_code).is_equal_to(200)
+
+
 def run_test(test_name, test):
   try:
     print("- " + test_name)
@@ -59,6 +67,7 @@ def tests():
   run_test("json", json)
   run_test("goodbye", goodbye)
   run_test("cookie", cookie)
+  run_test("cors", cors)
 
 
 def main():
