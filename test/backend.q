@@ -20,4 +20,8 @@
   .res.okWithAuthCookie["s355IonT0k3n";] {[req]
     "Check your cookies!"}]
 
+.get.serve["/cors";
+  .res.ok {[req]
+    "This response has been OKed by the server"}]
+
 .jra.listen 8000

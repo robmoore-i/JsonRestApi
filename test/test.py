@@ -46,12 +46,18 @@ def cookie():
 
 
 def cors():
+  # The preflight request must pass
   headers = { "access-control-request-method": "GET" , "access-control-request-headers": "Content-Type" }
   options = requests.options("http://localhost:8000/cors", headers=headers)
   assert_that(options.headers["Access-Control-Allow-Origin"]).is_equal_to("http://localhost:3000")
   assert_that(options.headers["Access-Control-Allow-Methods"]).is_equal_to("GET")
   assert_that(options.headers["Access-Control-Allow-Headers"]).is_equal_to("Content-Type")
   assert_that(options.status_code).is_equal_to(200)
+
+  # And also the browser must be assured that the response was intended for them
+  get = requests.get("http://localhost:8000/cors")
+  assert_that(get.headers["Access-Control-Allow-Origin"]).is_equal_to("http://localhost:3000")
+  assert_that(get.status_code).is_equal_to(200)
 
 
 def run_test(test_name, test):

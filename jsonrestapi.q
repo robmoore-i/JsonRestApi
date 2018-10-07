@@ -61,7 +61,7 @@ jsonHeader:"Content- Type:application/json"
 setAuthCookieHeader:{"Set-Cookie: sid=",x}
 
 // Create a JSON response from a Q object
-jsonResponse:{okHeader,"\r\n",jsonHeader,"\r\n\r\n",.j.j x}
+jsonResponse:{okHeader,"\r\n",corsAllowOrigin,"\r\n",jsonHeader,"\r\n\r\n",.j.j x}
 
 // Create a JSON response from a Q object including a cookie
 authenticatedJsonResponse:{okHeader,"\r\n",jsonHeader,"\r\n",setAuthCookieHeader[x],"\r\n\r\n",.j.j y}
@@ -80,8 +80,8 @@ listen:{[p]
     postres};
   .z.pm::{
     optreq::`path`headers!(x 1;x 2);
-    method:optreq[`headers;`$"access-control-request-method"];
-    headers:optreq[`headers;`$"access-control-request-headers"];
+    method:$[ ""~m:optreq[`headers;`$"access-control-request-method"] ; "GET" ; m ];
+    headers:$[ ""~h:optreq[`headers;`$"access-control-request-headers"] ; "access-control-allow-origin" ; h ];
     optres::preflightResponse[method;headers];
     optres};
   system "p ",string p;}
