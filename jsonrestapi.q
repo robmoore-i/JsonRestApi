@@ -84,6 +84,7 @@ jsonResponse:{okHeader,"\r\n",corsAllowOrigin,"\r\n",jsonHeader,"\r\n\r\n",.j.j 
 authenticatedJsonResponse:{okHeader,"\r\n",jsonHeader,"\r\n",setAuthCookieHeader[x],"\r\n\r\n",.j.j y}
 
 // For the given incoming get request url, tries to find a function mapped to that endpoint.
+// It returns the appropriate function mapping request to response.
 matchGetResponder:{[url]
   f:.get.endpoints["/",last "/" vs url];
   if[not null f; :f];
@@ -92,14 +93,18 @@ matchGetResponder:{[url]
   matching:paramMatches where {not 0b~x} each paramMatches;
   if[0=count matching; :0N];
   match:first matching;
-  `f`params!(.get.paramEndpoints[match`path];match`params)}
+  `f`params!(.get.paramEndpoints[match`path];match`params);
+  f:.get.paramEndpoints[match`path];
+  params:match`params;
+  {[f;params;req]
+    f[req,(enlist `params)!enlist params]}[f;params;]}
 
 // Start listening using the current endpoints on the given port
 listen:{[p]
   .z.ph::{
     getreq::.get.request x;
-    match::matchGetResponder getreq.url;
-    getres::$[ 0N~match ; jsonResponse "none" ; $[ 99h=type match ; (match`f)[getreq,(enlist `params)!enlist match`params] ; match getreq ]];
+    f::matchGetResponder getreq.url;
+    getres::$[ 0N~f ; jsonResponse "none" ;  f getreq ];
     getres};
   .z.pp::{
     postreq::.post.request x;
