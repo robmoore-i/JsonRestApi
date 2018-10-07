@@ -60,6 +60,12 @@ def cors():
   assert_that(get.status_code).is_equal_to(200)
 
 
+def path_args():
+  res1 = requests.get("http://localhost:8000/pathargs/one/two")
+  assert_that(res1.status_code).is_equal_to(200)
+  assert_that(res1.json()).is_equal_to("pathargs -> one -> two")
+
+
 def run_test(test_name, test):
   try:
     print("- " + test_name)
@@ -75,6 +81,7 @@ def tests():
   run_test("goodbye", goodbye)
   run_test("cookie", cookie)
   run_test("cors", cors)
+  run_test("path_args", path_args)
 
 
 def main():
