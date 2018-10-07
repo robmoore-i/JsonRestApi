@@ -42,6 +42,10 @@ This file can be found in the example/ directory of this repository.
   .res.okWithAuthCookie["s355IonT0k3n";] {[req]
     "Check your cookies!"}]
 
+.get.serve["/pathargs/:a/:b";
+  .res.ok {[req]
+    "pathargs -> " , req[`params;`a] , " -> " , req[`params;`b]}]
+
 .jra.listen 8000
 ```
 
@@ -53,12 +57,9 @@ You'll also need a couple of python libraries (requests, assertpy).
 
 I construct nicer structures from the interface provided automatically by `.z.ph` and `.z.pp`.
 
-Endpoint functions take in a request of the appropriate method (either GET or POST), and should return any q structure.
-This structure will be serialized into JSON and returned to the sender.
+Endpoint functions take in a request of the appropriate method (either GET or POST), and should return any q structure. This structure will be serialized into JSON and returned to the sender. If there you have used parameters encoded in the path of the served endpoint, then these are accessible as an additional key of the request dictionary called 'params'.
 
-The wrappers `.res.ok` and `.res.okWithAuthCookie` wrap the server's functions so that their return value (any q structure)
-is wrapped with a HTTP header, setting content-type to application/json and serializing the resultant q object into JSON using `.j.j`.
-This is then sent back to the sender.
+The wrappers `.res.ok` and `.res.okWithAuthCookie` wrap the server's functions so that their return value (any q structure) is wrapped with a HTTP header, setting content-type to application/json and serializing the resultant q object into JSON using `.j.j`. This is then sent back to the sender.
 
 ### Get request
 
@@ -109,6 +110,13 @@ The JSON booleans, true and false, are mapped to q booleans 1b and 0b as appropr
 }
 ```
 
+## Config
+
+You need a `config.q` file in the same directory as you call your server from.
+
+For the above example, I have `config.q` in the same directory as `backend.q`.
+
 ## Caveats
 
 - Only supports GET and POST methods.
+- Path parameters are only supported for GET requests (POST data should go in the body).
