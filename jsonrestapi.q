@@ -107,7 +107,7 @@ listen:{[p]
     -1 .j.j getreq;
     f::matchGetResponder getreq.url;
     getres::$[ 0N~f ; jsonResponse "none" ;  f getreq ];
-    -1 "Sending response"
+    -1 "Sending response";
     -1 getres;
     getres};
   .z.pp::{
