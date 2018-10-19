@@ -103,19 +103,31 @@ matchGetResponder:{[url]
 listen:{[p]
   .z.ph::{
     getreq::.get.request x;
+    -1 "Received GET";
+    -1 .j.j getreq;
     f::matchGetResponder getreq.url;
     getres::$[ 0N~f ; jsonResponse "none" ;  f getreq ];
+    -1 "Sending response"
+    -1 getres;
     getres};
   .z.pp::{
     postreq::.post.request x;
+    -1 "Received POST";
+    -1 .j.j postreq;
     f:.post.endpoints["/",last "/" vs postreq.url];
     postres::$[ null f ; jsonResponse "none" ; f postreq ];
+    -1 "Sending response";
+    -1 postres;
     postres};
   .z.pm::{
     optreq::`path`headers!(x 1;x 2);
+    -1 "Received OPTIONS";
+    -1 .j.j optreq;
     method:$[ ""~m:optreq[`headers;`$"access-control-request-method"] ; "GET" ; m ];
     headers:$[ ""~h:optreq[`headers;`$"access-control-request-headers"] ; "access-control-allow-origin" ; h ];
     optres::preflightResponse[method;headers];
+    -1 "Sending response";
+    -1 optres;
     optres};
   system "p ",string p;}
 
