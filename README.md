@@ -51,7 +51,7 @@ This file can be found in the test/ directory of this repository.
 
 See test.py within the test/ directory for the behaviour of this server. in
 order to run the tests, you will need to have the QHOME environment variable set.
-You'll also need a couple of python libraries (requests, assertpy).
+For running the tests you'll also need a couple of python libraries (requests, assertpy).
 
 ## Structures
 
