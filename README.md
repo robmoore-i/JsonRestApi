@@ -15,7 +15,7 @@ expect this ease and simplicity (Python, J, Haskell) are disappointing.
 
 This is designed to be used in a file-at-a-time manner. One file denotes one q
 process, which listens on one port. Here is an example of such a file, "backend.q".
-This file can be found in the example/ directory of this repository.
+This file can be found in the test/ directory of this repository.
 
 ```
 // backend.q
