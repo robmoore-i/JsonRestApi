@@ -3,8 +3,8 @@
 0. Introduction
 1. Background - What is the value in json rest apis?
 2. Motivation - Why would we use Q for providing a json rest api?
-3. How?
-4. Demonstration of a real world use-case
+3. Implementation
+4. Demonstration of a real world use-case: Web analytics
 5. Future work: HTTPS
 6. References
 
@@ -52,8 +52,8 @@ Endpoints for get requests can be parameterised, for example "/user/:userid/sett
 
 ```
 .get.serve["/user/:userid/:propertyname";
-  .res.ok {[req]
-    "Getting property {" , req[`params;`propertyname] , "} from user {" , req[`params;`userid] , "}"
+  {[req]
+    -1 "Getting property {" , req[`params;`propertyname] , "} from user {" , req[`params;`userid] , "}"
     // etc.
   }]
 ```
@@ -62,8 +62,8 @@ Post request endpoints can contain a json message body. This is parsed and made 
 
 ```
 .post.serve["/save/settings";
-  .res.ok {[req]
-    "Saving settings " , raze .Q.s req[`body;`settings]
+  {[req]
+    -1 "Saving settings " , raze .Q.s req[`body;`settings]
   }]
 ```
 
@@ -77,29 +77,31 @@ Once all of the API endpoints have been defined, all that's left is to tell the 
 
 This is the technical part of this blog post, where I'll talk in more detail about the design of the program and some of the interesting pieces of code.
 
-## Demonstration of a real world use-case
+## Demonstration of a real world use-case: Web analytics
 
-I am building an app. I want to persist some dynamic data onto a server and then provide an API to access and manipulate it. Note that I could be talking about literally almost any of the various apps you have used today.
+For a demonstration, we'll write a simple server for capturing webpage analytics. It is valueable for a business to be able to monitor how users are using their webpages. For this reason, a server for capturing real time web analytics is an important piece of software to have for evolving a widely used frontend. Web analytics is, fundementally, a tick data capture service, which is why I've chosen to use it for this example.
 
-On the frontend we will have an interface for interacting with the server which is (hopefully!) decoupled from the application-specific logic. Here's a rough specification we might create for our purposes.
+Below is a quick outline of the simple functionality our server will support. It needs to identify users and capture events that take place in the webpage. Our UI/UX engineers will also surely need to use our captured analytics, so we'll need to support an API for serving the stored data as well.
 
 ```
+// Identifies a user by username and gives them a cookie to track their actions within the context of their current session.
 Route: /identify
 Method: POST
 POST Body: Json of the form {username: `username`}
 Function: Checks if the given username is stored on the server and if it is, returns a session token.
 Note: I have omitted the use of a password for this endpoint specifically to avoid conveying any illusion of security over plain HTTP.
 
-Route: /getdata/:key
+// Lets our UI/UX engineers access the data
+Route: /events/get/:username
 Method: GET
-Function: Return the string hex bytes stored under the key given in the request URL for the session's user.
-Requires session token
+Function: Return all of the events captured within sessions of the user with the given username.
 
-Route: /postdata
+// Our frontend posts data back to us about events
+Route: /events/capture
 Method: POST
-POST Body: Json of the form {key: `key to store data under`, value: `string of hex bytes to store`}
-Function: Persistently stores the hex bytes under the provided key for the current session's user.
-Requires session token
+Cookie: Requires valid session token
+POST Body: JSON: {eventName: `event name`}
+Function: Store the data associated with the event recorded by the web page.
 ```
 
 ## Future work
