@@ -39,6 +39,14 @@ def canGetFirstEvent():
   assert_that(res.json()).is_equal_to({"event": "Started server!"})
 
 
+def canGetSecondEvent():
+  session = requests.Session()
+  session.post("http://localhost:8000/identify", json={"username": "Lauren"})
+  res = session.get("http://localhost:8000/event/get/1")
+  assert_that(res.status_code).is_equal_to(200)
+  assert_that(res.json()).is_equal_to({"event": "Wrote some tests"})
+
+
 def run_test(test_name, test):
   try:
     print("- " + test_name)
@@ -51,6 +59,7 @@ def tests():
   run_test("canIdentifyAndGetSessionToken", canIdentifyAndGetSessionToken)
   run_test("identificationFailsIfNotAnExistingUser", identificationFailsIfNotAnExistingUser)
   run_test("canGetFirstEvent", canGetFirstEvent)
+  run_test("canGetSecondEvent", canGetSecondEvent)
 
 
 usage = "USAGE: ./test.py [a|r]\na => don't start the server because it's (a)lready running.\nr => (r)un the server."

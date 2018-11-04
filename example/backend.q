@@ -3,6 +3,7 @@
 \e 1
 
 user:flip `id`name!(0 1 2;`Lauren`Kyle`Dan)
+event:flip `id`description!(0 1 2;("Started server!";"Wrote some tests";"Made the tests pass"))
 
 .post.serve["/identify";
   {[req]
@@ -13,6 +14,8 @@ user:flip `id`name!(0 1 2;`Lauren`Kyle`Dan)
 
 .get.serve["/event/get/:eventid";
   .res.ok {[req]
-    (enlist `event)!enlist "Started server!"}]
+    -1 "Getting event with id ",string eventid:"J"$req[`params;`eventid];
+    description:exec description from event where id=eventid;
+    (enlist `event)!description}]
 
 .jra.listen 8000
