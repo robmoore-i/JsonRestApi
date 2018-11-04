@@ -81,7 +81,7 @@ setAuthCookieHeader:{"Set-Cookie: sid=",x}
 jsonResponse:{okHeader,"\r\n",corsAllowOrigin,"\r\n",jsonHeader,"\r\n\r\n",.j.j x}
 
 // Create a JSON response from a Q object including a cookie
-authenticatedJsonResponse:{okHeader,"\r\n",jsonHeader,"\r\n",setAuthCookieHeader[x],"\r\n\r\n",.j.j y}
+authenticatedJsonResponse:{okHeader,"\r\n",jsonHeader,"\r\n",setAuthCookieHeader[raze string x],"\r\n\r\n",.j.j y}
 
 // For the given incoming get request url, tries to find a function mapped to that endpoint.
 // It returns the appropriate function mapping request to response.

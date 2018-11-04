@@ -40,96 +40,66 @@ Q provides built in solutions for both handling HTTP requests and making databas
 
 ### Usage
 
-The code I've produced presents the following API from within the .jra namespace, which stands for "(j)son (r)est (a)pi".
+The code I've produced presents the following API.
 
 ```
-.jra.get[endpoint;func] // endpoint is a URL path, func is a unary function taking a HTTP request and returning a HTTP response.
-.jra.post[endpoint;func]
+.get.serve[endpoint;func]  // endpoint is a URL path, func is a unary function taking a HTTP request and returning a HTTP response.
+.post.serve[endpoint;func]
 .jra.listen[portnumber]
 ```
 
-Endpoints for get requests can be parameterised, for example "/user/:userid/settings" will match "/user/123/settings" and also "/user/rob/settings". The matched parameter is available for the corresponding function as a value of the request passed to it as
-an argument. For example:
+Endpoints for get requests can be parameterised, for example "/user/:userid/settings" will match "/user/123/settings" and also "/user/rob/settings". The matched parameter is available for the corresponding function as a value of the request passed to it as an argument. For example:
 
 ```
+.get.serve["/user/:userid/:propertyname";
+  .res.ok {[req]
+    "Getting property {" , req[`params;`propertyname] , "} from user {" , req[`params;`userid] , "}"
+    // etc.
+  }]
 ```
 
 Post request endpoints can contain a json message body. This is parsed and made available to the endpoint's corresponding function, again in the request. For example:
 
 ```
+.post.serve["/save/settings";
+  .res.ok {[req]
+    "Saving settings " , raze .Q.s req[`body;`settings]
+  }]
 ```
 
 Once all of the API endpoints have been defined, all that's left is to tell the process to listen on a specific port. For example:
 
 ```
+.jra.listen 8000
 ```
 
 ### Details
 
-This is the technical part of this blog post, where I'll talk in more detail about the design of the program and some of the interesting pieces of code. 
+This is the technical part of this blog post, where I'll talk in more detail about the design of the program and some of the interesting pieces of code.
 
 ## Demonstration of a real world use-case
 
 I am building an app. I want to persist some dynamic data onto a server and then provide an API to access and manipulate it. Note that I could be talking about literally almost any of the various apps you have used today.
 
-On the frontend we will have an interface for interacting with the server which is (hopefully...) decoupled from our application logic. Let's say it uses the very straightforward and popular fetch library. I've omitted some trivial implementation details, because all that's important here is the interface.
+On the frontend we will have an interface for interacting with the server which is (hopefully!) decoupled from the application-specific logic. Here's a rough specification we might create for our purposes.
 
 ```
-// Server.js
-// Contains the prototype for server objects.
-
-export function Server() {
-    return {
-        sessionToken: null,
-        setSessionToken = ((sessionToken) => {this.sessionToken = sessionToken}).bind(this) // Bind `this` to current context
-        
-        let fetchGET  = (endpoint)       => fetch(...) // Implementation omitted, sends sessionToken as cookie
-        let fetchPOST = (endpoint, data) => fetch(...) // Implementation omitted, sends sessionToken as cookie
-        
-        authenticate: async (username, passwordDigest) => {
-            let payload = {username: username, passwordDigest: passwordDigest}
-            return fetchGET("authenticate", JSON.stringify(payload))
-                .then(response => {
-                    let cookie = ...       // Implementation omitted, uses response
-                    let sessionToken = ... // Implementation omitted, uses cookie
-                    setSessionToken(sessionToken)
-                })
-        },
-
-        fetchMyData: (dataID) => {
-            return fetchGET("getdata/" + String(dataID))
-        },
-
-        saveMyData: (dataID, hexBytes) => {
-            let payload = {dataid: dataID, hex: hexBytes}
-            return fetchPOST("postdata"), JSON.stringify(payload))
-        }
-    }
-}
-
-export const server = Server()
-```
-
-Our backend then, must provide these two endpoints and their associated behaviour. Here's a rough specification we might create to fulfil this purpose:
-
-```
-Route: /authenticate
+Route: /identify
 Method: POST
-POST Body: Json of the form {username: `username`, passwordDigest: `password-digest`}
-Function: Checks if username stored on the server has a password which matches the provided digest.
-Note: You should not send passwords in plaintext ever, but it would be especially careless to do this without HTTPS.
+POST Body: Json of the form {username: `username`}
+Function: Checks if the given username is stored on the server and if it is, returns a session token.
+Note: I have omitted the use of a password for this endpoint specifically to avoid conveying any illusion of security over plain HTTP.
 
-Route: /getdata/:dataid
+Route: /getdata/:key
 Method: GET
-Function: Return the bytes stored under the key {dataid} as a hex string
+Function: Return the string hex bytes stored under the key given in the request URL for the session's user.
 Requires session token
 
 Route: /postdata
 Method: POST
-POST Body: Json of the form {dataid: `key to store data under`, hex: `string of hex bytes to store`}
-Function: Persistently stores the hex bytes using the dataid provided as the key.
+POST Body: Json of the form {key: `key to store data under`, value: `string of hex bytes to store`}
+Function: Persistently stores the hex bytes under the provided key for the current session's user.
 Requires session token
-
 ```
 
 ## Future work
