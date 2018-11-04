@@ -90,8 +90,8 @@ unauthorizedResponse:{unauthorizedHeader,"\r\n\r\n"}
 // For the given incoming get request url, tries to find a function mapped to that endpoint.
 // It returns the appropriate function mapping request to response.
 matchGetResponder:{[url]
-  f:.get.endpoints["/",last "/" vs url];
-  if[not null f; :f];
+  f:.get.endpoints["/",last "/" vs url]; // First check the non-parameterised endpoints
+  if[100h=type f; :f];
   if[0=count .get.paramEndpoints; :0N];
   paramMatches:{[url;path].get.matchParams[path;url]}["/","/"sv 1_"/" vs url;] each key .get.paramEndpoints;
   matching:paramMatches where {not 0b~x} each paramMatches;
@@ -110,6 +110,7 @@ listen:{[p]
     -1 "Received GET";
     -1 .j.j getreq;
     f::matchGetResponder getreq.url;
+    -1 "Matched endpoint";
     getres::$[ 0N~f ; jsonResponse "none" ;  f getreq ];
     -1 "Sending response";
     -1 getres;

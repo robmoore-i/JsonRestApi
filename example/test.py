@@ -2,17 +2,18 @@
 
 import os
 import time
+import sys
 import requests
 from assertpy import assert_that
 
 QHOME = os.environ["QHOME"]
 
-def start_backend_q():
+def start_backend():
   # Start with a random seed (S) of 10 for predictable test results.
   os.system(QHOME + "/l32/q backend.q -S 10 &")
 
 
-def kill_backend_q():
+def stop_backend():
   os.system("pkill -f \"" + QHOME + "/l32/q backend.q\"")
 
 
@@ -30,6 +31,14 @@ def identificationFailsIfNotAnExistingUser():
   assert_that(session.cookies.get_dict()).is_equal_to({})
 
 
+def canGetFirstEvent():
+  session = requests.Session()
+  session.post("http://localhost:8000/identify", json={"username": "Lauren"})
+  res = session.get("http://localhost:8000/event/get/0")
+  assert_that(res.status_code).is_equal_to(200)
+  assert_that(res.json()).is_equal_to({"event": "Started server!"})
+
+
 def run_test(test_name, test):
   try:
     print("- " + test_name)
@@ -41,18 +50,36 @@ def run_test(test_name, test):
 def tests():
   run_test("canIdentifyAndGetSessionToken", canIdentifyAndGetSessionToken)
   run_test("identificationFailsIfNotAnExistingUser", identificationFailsIfNotAnExistingUser)
+  run_test("canGetFirstEvent", canGetFirstEvent)
 
+
+usage = "USAGE: ./test.py [a|r]\na => don't start the server because it's (a)lready running.\nr => (r)un the server."
 
 def main():
-    print("=== starting backend ===")
-    start_backend_q()
-    time.sleep(1)
+    print("Running: " + str(sys.argv))
+
+    if len(sys.argv) != 2:
+        print(usage)
+        exit(1)
+    elif sys.argv[1] == "a":  # 'a' is for 'already running'
+        start_server = False
+    elif sys.argv[1] == "r":  # 'r' is for 'run it yourself'
+        start_server = True
+    else:
+        print(usage)
+        exit(1)
+
+    if start_server:
+        print("=== starting backend ===")
+        start_backend()
+        time.sleep(1)
 
     print("=== starting tests ===")
     tests()
 
-    print("=== killing backend ===")
-    kill_backend_q()
+    if start_server:
+        print("=== killing backend ===")
+        stop_backend()
 
     print("=== finished tests ===")
 
