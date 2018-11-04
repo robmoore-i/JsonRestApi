@@ -47,6 +47,12 @@ def canGetSecondEvent():
   assert_that(res.json()).is_equal_to({"event": "Wrote some tests"})
 
 
+def gettingEventFailsWithoutSessionToken():
+  session = requests.Session()
+  res = session.get("http://localhost:8000/event/get/2")
+  assert_that(res.status_code).is_equal_to(401)
+
+
 def run_test(test_name, test):
   try:
     print("- " + test_name)
@@ -60,6 +66,7 @@ def tests():
   run_test("identificationFailsIfNotAnExistingUser", identificationFailsIfNotAnExistingUser)
   run_test("canGetFirstEvent", canGetFirstEvent)
   run_test("canGetSecondEvent", canGetSecondEvent)
+  run_test("gettingEventFailsWithoutSessionToken", gettingEventFailsWithoutSessionToken)
 
 
 usage = "USAGE: ./test.py [a|r]\na => don't start the server because it's (a)lready running.\nr => (r)un the server."

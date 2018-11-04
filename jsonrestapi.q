@@ -81,11 +81,17 @@ setAuthCookieHeader:{"Set-Cookie: sid=",x}
 jsonResponse:{okHeader,"\r\n",corsAllowOrigin,"\r\n",jsonHeader,"\r\n\r\n",.j.j x}
 
 // Create a JSON response from a Q object including a cookie
-authenticatedJsonResponse:{okHeader,"\r\n",jsonHeader,"\r\n",setAuthCookieHeader[raze string x],"\r\n\r\n",.j.j y}
+authenticatedJsonResponse:{okHeader,"\r\n",jsonHeader,"\r\n",setAuthCookieHeader[x],"\r\n\r\n",.j.j y}
 
 // Unauthorized (401)
 unauthorizedHeader:"HTTP/1.x 401 UNAUTHORIZED"
 unauthorizedResponse:{unauthorizedHeader,"\r\n\r\n"}
+
+// Given the raw value in the `Cookie header of a HTTP request, produces a dictionary of the available key/value pairs of cookies.
+parseCookies:{[cookieHeader]{(`$x 0)!x 1}flip"="vs/:","vs cookieHeader}
+
+// Gets the session cookie from a request
+sessionCookie:{[req]parseCookies[req[`headers;`Cookie]]`sid}
 
 // For the given incoming get request url, tries to find a function mapped to that endpoint.
 // It returns the appropriate function mapping request to response.

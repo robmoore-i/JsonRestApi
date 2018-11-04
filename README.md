@@ -120,3 +120,7 @@ For the above example, I have `config.q` in the same directory as `backend.q`.
 
 - Only supports GET and POST methods.
 - Path parameters are only supported for GET requests (POST data should go in the body).
+
+## Todo
+
+- Write a failing test for when you try to set a session id (sid) value which isn't a string
