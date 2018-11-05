@@ -1,7 +1,5 @@
 \l ../jsonrestapi.q
 
-\e 1
-
 user:flip `name`sessionToken!(`Lauren`Kyle`Dan;3#enlist "unset")
 event:flip `timestamp`username`description!((2018.11.05T09:21:35.000;2018.11.05T09:21:35.033;2018.11.05T09:21:35.066);(`Kyle`Dan`Lauren);("Started server";"Wrote some tests";"Made the tests pass"))
 
