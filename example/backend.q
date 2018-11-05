@@ -13,11 +13,10 @@ k)beginNewUserSession:{[username;sessionToken]![`user;,(=;`name;,username);0b;(,
 
 .post.serve["/identify";
   {[req]
-    -1 "Identifying as ",string username:`$req[`body;`username];
+    username:`$req[`body;`username];
     if[not username in user`name; :.jra.unauthorizedResponse[]];
     sessionToken:generateSessionToken[];
     beginNewUserSession[`Lauren;sessionToken];
-    -1 .Q.s user;
     .jra.authenticatedJsonResponse[sessionToken;()]}]
 
 // Returns the name of the user currently in a session using the given (sessionToken)
@@ -28,12 +27,9 @@ isValidUsername:{not any(null x;1<>count x;(-11h)<>type x)}
 
 .post.serve["/event/capture";
   {[req]
-    -1 "Capturing event";
     sessionToken:.jra.sessionCookie req;
     username:matchUserInSession sessionToken;
-    -1 "From session token, you are identified as " , string username;
     if[not isValidUsername username; :.jra.unauthorizedResponse[]];
-    -1 "Identification successful";
     event::event,`timestamp`username`description!(.z.Z;username;req[`body;`description]);
     .jra.jsonResponse ()}]
 
@@ -42,7 +38,6 @@ k)getUserEvents:{[username]?[`event;,(=;`username;,username);0b;()]}
 
 .get.serve["/event/get/:username";
   {[req]
-    -1 "Getting events";
     username:`$req[`params;`username];
     events:getUserEvents username;
     .jra.jsonResponse events}]
