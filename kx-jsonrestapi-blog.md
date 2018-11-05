@@ -94,17 +94,17 @@ POST Body: Json of the form {username: `username`}
 Function: Checks if the given username is stored on the server and if it is, returns a session token.
 Note: I have omitted the use of a password for this endpoint specifically to avoid conveying any illusion of robust security over plain HTTP.
 
-// Lets our UI/UX engineers access the data
-Route: /events/get/:username
-Method: GET
-Function: Return all of the events captured within sessions of the user with the given username.
-
-// Our frontend posts data back to us about events
+// Our frontend posts data back to us about events associated with a given user
 Route: /events/capture
 Method: POST
 Cookie: Requires valid session token
 POST Body: JSON: {eventName: `event name`}
 Function: Store the data associated with the event recorded by the web page.
+
+// Lets our UI/UX engineers access the data
+Route: /events/get/:username
+Method: GET
+Function: Return all of the events captured within sessions of the user with the given username.
 ```
 
 ### Code

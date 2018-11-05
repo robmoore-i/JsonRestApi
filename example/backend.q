@@ -20,16 +20,6 @@ beginNewUserSession:{[username;sessionToken]![`user;enlist(=;`name;enlist userna
     -1 .Q.s user;
     .jra.authenticatedJsonResponse[sessionToken;()]}]
 
-// Return a table of all events associated with the given (username)
-getUserEvents:{[username]?[`event;enlist(=;`username;enlist username);0b;()]}
-
-.get.serve["/event/get/:username";
-  {[req]
-    -1 "Getting events";
-    username:`$req[`params;`username];
-    events:getUserEvents username;
-    .jra.jsonResponse events}]
-
 // Returns the name of the user currently in a session using the given (sessionToken)
 matchUserInSession:{[sessionToken]first ?[`user;enlist((\:;~);`sessionToken;sessionToken);();`name]}
 
@@ -46,5 +36,15 @@ isValidUsername:{not any(null x;1<>count x;(-11h)<>type x)}
     -1 "Identification successful";
     event::event,`timestamp`username`description!(.z.Z;username;req[`body;`description]);
     .jra.jsonResponse ()}]
+
+// Return a table of all events associated with the given (username)
+getUserEvents:{[username]?[`event;enlist(=;`username;enlist username);0b;()]}
+
+.get.serve["/event/get/:username";
+  {[req]
+    -1 "Getting events";
+    username:`$req[`params;`username];
+    events:getUserEvents username;
+    .jra.jsonResponse events}]
 
 .jra.listen 8000
