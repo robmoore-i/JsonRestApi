@@ -19,10 +19,14 @@ beginNewUserSession:{[username;sessionToken]![`user;enlist(=;`name;enlist userna
     -1 .Q.s user;
     .jra.authenticatedJsonResponse[sessionToken;()]}]
 
+// Return a table of all events associated with the given (username)
+getUserEvents:{[username]?[`event;enlist(=;`username;enlist username);0b;()]}
+
 .get.serve["/event/get/:username";
   {[req]
     -1 "Getting events";
-    events:select from event where username=`$req[`params;`username];
+    username:`$req[`params;`username];
+    events:getUserEvents username;
     .jra.jsonResponse events}]
 
 .post.serve["/event/capture";
