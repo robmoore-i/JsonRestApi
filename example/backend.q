@@ -38,7 +38,7 @@ isValidUsername:{not any(null x;1<>count x;(-11h)<>type x)}
     .jra.jsonResponse ()}]
 
 // Return a table of all events associated with the given (username)
-getUserEvents:{[username]?[`event;enlist(=;`username;enlist username);0b;()]}
+k)getUserEvents:{[username]?[`event;,(=;`username;,username);0b;()]}
 
 .get.serve["/event/get/:username";
   {[req]
