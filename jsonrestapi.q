@@ -96,7 +96,7 @@ sessionCookie:{[req]parseCookies[req[`headers;`Cookie]]`sid}
 // For the given incoming get request url, tries to find a function mapped to that endpoint.
 // It returns the appropriate function mapping request to response.
 matchGetResponder:{[url]
-  f:.get.endpoints["/",last "/" vs url]; // First check the non-parameterised endpoints
+  f:.get.endpoints["/","/"sv 1_"/"vs url]; // First check the non-parameterised endpoints
   if[100h=type f; :f];
   if[0=count .get.paramEndpoints; :0N];
   paramMatches:{[url;path].get.matchParams[path;url]}["/","/"sv 1_"/" vs url;] each key .get.paramEndpoints;
@@ -125,7 +125,7 @@ listen:{[p]
     postreq::.post.request x;
     -1 "Received POST";
     -1 .j.j postreq;
-    f:.post.endpoints["/",last "/" vs postreq.url];
+    f:.post.endpoints["/","/"sv 1_"/"vs postreq.url];
     postres::$[ null f ; jsonResponse "none" ; f postreq ];
     -1 "Sending response";
     -1 postres;
