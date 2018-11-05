@@ -24,7 +24,7 @@ k)beginNewUserSession:{[username;sessionToken]![`user;,(=;`name;,username);0b;(,
 k)matchUserInSession:{[sessionToken]*:?[`user;,((\:;~);`sessionToken;sessionToken);();`name]}
 
 // Returns true if the given argument is a valid username for the `user table.
-isValidUsername:{not any(null x;1<>count x;(-11h)<>type x)}
+k)isValidUsername:{min(~:^:x;1=#:x;(-11h)=@:x)}
 
 .post.serve["/event/capture";
   {[req]
