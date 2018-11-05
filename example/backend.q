@@ -14,7 +14,7 @@ k)beginNewUserSession:{[username;sessionToken]![`user;,(=;`name;,username);0b;(,
     username:`$req[`body;`username];
     if[not username in user`name; :.jra.unauthorizedResponse[]];
     sessionToken:generateSessionToken[];
-    beginNewUserSession[`Lauren;sessionToken];
+    beginNewUserSession[username;sessionToken];
     .jra.authenticatedJsonResponse[sessionToken;()]}]
 
 // Returns the name of the user currently in a session using the given (sessionToken)

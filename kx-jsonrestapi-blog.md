@@ -133,7 +133,7 @@ The endpoint looks like this:
     username:`$req[`body;`username];                             // Extract the provided username from the POST request body
     if[not username in user`name; :.jra.unauthorizedResponse[]]; // If the username doesn't match one of our users then something went wrong
     sessionToken:generateSessionToken[];                         // Create a session token
-    beginNewUserSession[`Lauren;sessionToken];                   // Record the session token for the user's new session
+    beginNewUserSession[username;sessionToken];                  // Record the session token for the user's new session
     .jra.authenticatedJsonResponse[sessionToken;()]}]            // Return a response with a Set-Cookie header containing the web analytics tracking cookie.
 ```
 
