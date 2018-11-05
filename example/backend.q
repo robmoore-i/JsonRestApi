@@ -21,7 +21,7 @@ k)beginNewUserSession:{[username;sessionToken]![`user;,(=;`name;,username);0b;(,
     .jra.authenticatedJsonResponse[sessionToken;()]}]
 
 // Returns the name of the user currently in a session using the given (sessionToken)
-matchUserInSession:{[sessionToken]first ?[`user;enlist((\:;~);`sessionToken;sessionToken);();`name]}
+k)matchUserInSession:{[sessionToken]*:?[`user;,((\:;~);`sessionToken;sessionToken);();`name]}
 
 // Returns true if the given argument is a valid username for the `user table.
 isValidUsername:{not any(null x;1<>count x;(-11h)<>type x)}
