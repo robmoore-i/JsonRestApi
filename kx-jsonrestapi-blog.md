@@ -38,8 +38,6 @@ Q is an intuitive choice to provide this behaviour, because it supports persiste
 
 Q provides built in solutions for both handling HTTP requests and making database accesses. Our aim is to model the server as a function. These functions have the signiture `Endpoint -> Request -> Response`.
 
-### Usage
-
 The code I've produced presents the following API.
 
 ```
@@ -74,10 +72,6 @@ Once all of the API endpoints have been defined, all that's left is to tell the 
 .jra.listen 8000
 ```
 
-### Details
-
-This is the technical part of this blog post, where I'll talk in more detail about the design of the program and some of the interesting pieces of code.
-
 ## Demonstration of a real world use-case: Web analytics
 
 For a demonstration, we'll write a simple server for capturing webpage analytics. It is valueable for a business to be able to monitor how users are using their webpages. For this reason, a server for capturing real time web analytics is an important piece of software to have for evolving a widely used frontend. Web analytics is, fundementally, a tick data capture service, which is why I've chosen to use it for this example.
@@ -109,7 +103,45 @@ Function: Return all of the events captured within sessions of the user with the
 
 ### Code
 
+#### The /identify endpoint
 
+When tracking user interactions, we want our data to be tied to a session. To do this, we will give users a session token for us to store with recorded events. To identify with the tracking server and get our web analytics session token, we will post our username, and receive a session token cookie in the response.
+
+Our user table looks like this:
+
+```
+user:flip `name`sessionToken!(`Lauren`Kyle`Dan;3#enlist "a-session-token")
+```
+
+We'll use 64 random bytes as our session tokens for simplicity.
+
+```
+generateSessionToken:{raze string 64?0x0}
+```
+
+We also need to be able to set the current session for a given user.
+
+```
+k)beginNewUserSession:{[username;sessionToken]![`user;,(=;`name;,username);0b;(,`sessionToken)!,(enlist;sessionToken)];}
+```
+
+The endpoint looks like this:
+
+```
+.post.serve["/identify";
+  {[req]
+    username:`$req[`body;`username];                             // Extract the provided username from the POST request body
+    if[not username in user`name; :.jra.unauthorizedResponse[]]; // If the username doesn't match one of our users then something went wrong
+    sessionToken:generateSessionToken[];                         // Create a session token
+    beginNewUserSession[`Lauren;sessionToken];                   // Record the session token for the user's new session
+    .jra.authenticatedJsonResponse[sessionToken;()]}]            // Return a response with a Set-Cookie header containing the web analytics tracking cookie.
+```
+
+#### The /event/capture endpoint
+
+### Testing a json rest api
+
+In order to deliver quality software fast, it is widely accepted that developers must write automated tests. It is very easy to do a manual test using postman, however I'd like to present a way to create simple integration tests using lightweight and commonly available tools.
 
 ### Handling preflight requests using HTTP OPTIONS
 

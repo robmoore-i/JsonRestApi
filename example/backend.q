@@ -1,7 +1,7 @@
 \l ../jsonrestapi.q
 
 user:flip `name`sessionToken!(`Lauren`Kyle`Dan;3#enlist "unset")
-event:flip `timestamp`username`description!((2018.11.05T09:21:35.000;2018.11.05T09:21:35.033;2018.11.05T09:21:35.066);(`Kyle`Dan`Lauren);("Started server";"Wrote some tests";"Made the tests pass"))
+event:flip `timestamp`username`description`sessionToken!((2018.11.05T09:21:35.000;2018.11.05T09:21:35.033;2018.11.05T09:21:35.066);(`Kyle`Dan`Lauren);("Started server";"Wrote some tests";"Made the tests pass");("kyle-token";"dan-token";"lauren-token"))
 
 // Generates a random session token - 64 random bytes.
 generateSessionToken:{raze string 64?0x0}
@@ -28,7 +28,7 @@ isValidUsername:{not any(null x;1<>count x;(-11h)<>type x)}
     sessionToken:.jra.sessionCookie req;
     username:matchUserInSession sessionToken;
     if[not isValidUsername username; :.jra.unauthorizedResponse[]];
-    event::event,`timestamp`username`description!(.z.Z;username;req[`body;`description]);
+    event::event,`timestamp`username`description`sessionToken!(.z.Z;username;req[`body;`description];sessionToken);
     .jra.jsonResponse ()}]
 
 // Return a table of all events associated with the given (username)
