@@ -64,6 +64,7 @@ Post request endpoints can contain a json message body. This is parsed and made 
 .post.serve["/save/settings";
   {[req]
     -1 "Saving settings " , raze .Q.s req[`body;`settings]
+    // etc.
   }]
 ```
 
@@ -81,6 +82,8 @@ This is the technical part of this blog post, where I'll talk in more detail abo
 
 For a demonstration, we'll write a simple server for capturing webpage analytics. It is valueable for a business to be able to monitor how users are using their webpages. For this reason, a server for capturing real time web analytics is an important piece of software to have for evolving a widely used frontend. Web analytics is, fundementally, a tick data capture service, which is why I've chosen to use it for this example.
 
+### Requirements
+
 Below is a quick outline of the simple functionality our server will support. It needs to identify users and capture events that take place in the webpage. Our UI/UX engineers will also surely need to use our captured analytics, so we'll need to support an API for serving the stored data as well.
 
 ```
@@ -89,7 +92,7 @@ Route: /identify
 Method: POST
 POST Body: Json of the form {username: `username`}
 Function: Checks if the given username is stored on the server and if it is, returns a session token.
-Note: I have omitted the use of a password for this endpoint specifically to avoid conveying any illusion of security over plain HTTP.
+Note: I have omitted the use of a password for this endpoint specifically to avoid conveying any illusion of robust security over plain HTTP.
 
 // Lets our UI/UX engineers access the data
 Route: /events/get/:username
@@ -104,12 +107,32 @@ POST Body: JSON: {eventName: `event name`}
 Function: Store the data associated with the event recorded by the web page.
 ```
 
+### Code
+
+
+
+### Handling preflight requests using HTTP OPTIONS
+
+Web browsers often perform a preflight request to a web server to validate a request for cross origin resource sharing, which is where the browser confirms that the requested resource is intended for the client. If it isn't, then the user may be at risk of becoming a victim of a cross-site scripting (XSS) attack. To handle the preflight request, a web server looking to provide dynamic data to a frontend must implement a HTTP OPTIONS response. In Q, this can be done very easily by using `.z.pm`.
+
 ## Future work
 
 HTTPS
 
-Cookie Authentication (ACTUALLY JUST DO THIS BEFOREHAND)
-
 Asynchronous execution
+
+## Further reading
+
+### HTTP
+
+.z.ph - HTTP GET
+.z.pp - HTTP POST
+.z.ac - Authenticate from cookie
+.z.pm - HTTP OPTIONS
+
+## JSON
+
+.j.j - Serialize into JSON
+.j.k - Deserialize from JSON
 
 ## References
