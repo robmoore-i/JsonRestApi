@@ -32,15 +32,18 @@ getUserEvents:{[username]?[`event;enlist(=;`username;enlist username);0b;()]}
 // Returns the name of the user currently in a session using the given (sessionToken)
 matchUserInSession:{[sessionToken]first ?[`user;enlist((\:;~);`sessionToken;sessionToken);();`name]}
 
+// Returns true if the given argument is a valid username for the `user table.
+isValidUsername:{not any(null x;1<>count x;(-11h)<>type x)}
+
 .post.serve["/event/capture";
   {[req]
     -1 "Capturing event";
     sessionToken:.jra.sessionCookie req;
     username:matchUserInSession sessionToken;
     -1 "From session token, you are identified as " , string username;
-    if[any(null username;1<>count username;(-11h)<>type username); :.jra.unauthorizedResponse[]];
+    if[not isValidUsername username; :.jra.unauthorizedResponse[]];
     -1 "Identification successful";
-    event::event,`timestamp`username`description!(.z.Z;`Kyle;req[`body;`description]);
+    event::event,`timestamp`username`description!(.z.Z;username;req[`body;`description]);
     .jra.jsonResponse ()}]
 
 .jra.listen 8000
