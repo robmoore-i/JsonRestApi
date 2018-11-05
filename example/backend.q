@@ -5,6 +5,7 @@
 user:flip `name`sessionToken!(`Lauren`Kyle`Dan;3#enlist "unset")
 event:flip `timestamp`username`description!((2018.11.05T09:21:35.000;2018.11.05T09:21:35.033;2018.11.05T09:21:35.066);(`Kyle`Dan`Lauren);("Started server";"Wrote some tests";"Made the tests pass"))
 
+// Generates a random session token - 64 random bytes.
 generateSessionToken:{raze string 64?0x0}
 
 // Saves a (sessionToken) as the latest valid token under the given (username)
