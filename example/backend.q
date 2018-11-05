@@ -29,11 +29,14 @@ getUserEvents:{[username]?[`event;enlist(=;`username;enlist username);0b;()]}
     events:getUserEvents username;
     .jra.jsonResponse events}]
 
+// Returns the name of the user currently in a session using the given (sessionToken)
+matchUserInSession:{[sessionToken]first ?[`user;enlist((\:;~);`sessionToken;sessionToken);();`name]}
+
 .post.serve["/event/capture";
   {[req]
     -1 "Capturing event";
-    token:.jra.sessionCookie req;
-    username:first exec name from user where sessionToken~\:token;
+    sessionToken:.jra.sessionCookie req;
+    username:matchUserInSession sessionToken;
     -1 "From session token, you are identified as " , string username;
     if[any(null username;1<>count username;(-11h)<>type username); :.jra.unauthorizedResponse[]];
     -1 "Identification successful";
