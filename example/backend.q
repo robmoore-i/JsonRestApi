@@ -5,11 +5,13 @@
 user:flip `name`sessionToken!(`Lauren`Kyle`Dan;3#enlist "unset")
 event:flip `timestamp`username`description!((2018.11.05T09:21:35.000;2018.11.05T09:21:35.033;2018.11.05T09:21:35.066);(`Kyle`Dan`Lauren);("Started server";"Wrote some tests";"Made the tests pass"))
 
+generateSessionToken:{raze string 64?0x0}
+
 .post.serve["/identify";
   {[req]
     -1 "Identifying as ",string username:`$req[`body;`username];
     if[not username in user`name; :.jra.unauthorizedResponse[]];
-    sessionToken:raze string 64?0x0;
+    sessionToken:generateSessionToken[];
     ![`user;enlist(=;`name;enlist`Lauren);0b;(enlist`sessionToken)!enlist(enlist;sessionToken)];
     -1 .Q.s user;
     .jra.authenticatedJsonResponse[sessionToken;()]}]
