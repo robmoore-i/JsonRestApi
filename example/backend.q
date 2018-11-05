@@ -9,7 +9,7 @@ event:flip `timestamp`username`description!((2018.11.05T09:21:35.000;2018.11.05T
 generateSessionToken:{raze string 64?0x0}
 
 // Saves a (sessionToken) as the latest valid token under the given (username)
-beginNewUserSession:{[username;sessionToken]![`user;enlist(=;`name;enlist username);0b;(enlist`sessionToken)!enlist(enlist;sessionToken)];}
+k)beginNewUserSession:{[username;sessionToken]![`user;,(=;`name;,username);0b;(,`sessionToken)!,(enlist;sessionToken)];}
 
 .post.serve["/identify";
   {[req]
