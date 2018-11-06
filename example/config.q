@@ -1,3 +1,0 @@
-\d .config
-
-frontendOrigin: "*"

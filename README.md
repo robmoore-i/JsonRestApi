@@ -57,9 +57,15 @@ For running the tests you'll also need a couple of python libraries (requests, a
 
 I construct nicer structures from the interface provided automatically by `.z.ph` and `.z.pp`.
 
-Endpoint functions take in a request of the appropriate method (either GET or POST), and should return any q structure. This structure will be serialized into JSON and returned to the sender. If there you have used parameters encoded in the path of the served endpoint, then these are accessible as an additional key of the request dictionary called 'params'.
+Endpoint functions take in a request of the appropriate method (either GET or POST), and return a valid HTTP response as a list of string lines. There are a couple of functions in the `.jra` namespace for creating HTTP responses out of any Q structure with `content-type: json`.
 
-The wrappers `.res.ok` and `.res.okWithAuthCookie` wrap the server's functions so that their return value (any q structure) is wrapped with a HTTP header, setting content-type to application/json and serializing the resultant q object into JSON using `.j.j`. This is then sent back to the sender.
+1. `.jra.jsonResponse`
+
+This takes a Q object and returns a valid HTTP response by serializing its argument into json using `.j.j`.
+
+2. `.jra.authenticatedJsonResponse`
+
+Does the same as `.jra.jsonResponse`, but also takes a session token as an argument and adds a `Set-Cookie` header containing a cookie called `sid` whose value is this session token.
 
 ### Get request
 
@@ -112,15 +118,9 @@ The JSON booleans, true and false, are mapped to q booleans 1b and 0b as appropr
 
 ## Config
 
-You need a `config.q` file in the same directory as you call your server from.
-
-For the above example, I have `config.q` in the same directory as `backend.q`.
+To do cross-origin resource sharing (CORS), your server must verify that any resources provided by it are intended for the recipient in question. To do this, an Access-Control-Allow-Origin header is required. In the same directory as your `backend.q` you can create a file called `config.q` which contains a value `.config.frontendOrigin`. This is a string of the origin of the recipient your server is intended to serve. If no config is provided, the value defaults to "*", which means that its resources are safe to use by any origin.
 
 ## Caveats
 
 - Only supports GET and POST methods.
 - Path parameters are only supported for GET requests (POST data should go in the body).
-
-## Todo
-
-- Write a failing test for when you try to set a session id (sid) value which isn't a string

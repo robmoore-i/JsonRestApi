@@ -1,4 +1,6 @@
-\l config.q
+$[()~key hsym `$"config.q";
+  .config.frontendOrigin:"*";
+  system "l config.q"];
 
 ////// ALL REQUESTS
 
