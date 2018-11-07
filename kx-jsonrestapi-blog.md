@@ -139,6 +139,41 @@ The endpoint looks like this:
 
 #### The /event/capture endpoint
 
+The central value proposition in a web analytics platform is capturing user events, so we of course need our json rest api to be able to have events posted to it. To associated captured events with a user session, we'll include the tracking cookie with the request.
+
+Our table of events looks like this:
+
+```
+event:flip `timestamp`username`description`sessionToken!((2018.11.05T09:21:35.000;2018.11.05T09:21:35.033;2018.11.05T09:21:35.066);(`Kyle`Dan`Lauren);("Started writing the server";"Wrote a failing test";"Made the test pass");("kyle-token";"dan-token";"lauren-token"))
+```
+
+We'll have a constructor to create a new event.
+
+```
+newEvent:{[username;description;sessionToken]
+  `timestamp`username`description`sessionToken!(.z.Z;username;description;sessionToken)}
+```
+
+From the session token supplied by the client we need to get the associated username. If none exists, then we'll inform the sender that their event capture request has an invalid token.
+
+```
+matchUserInSession:{[sessionToken]
+  username:first ?[`user;enlist((\:;~);`sessionToken;sessionToken);();`name];
+  $[all(not null x;1=count x;(-11h)=type x);username;`]}
+```
+
+The endpoint looks like this:
+
+```
+.post.serve["/event/capture";
+  {[req]
+    sessionToken:.jra.sessionToken req;                                   // Extract the session token from the request
+    username:matchUserInSession sessionToken;                             // Get the username matching the session token
+    if[null username; :.jra.unauthorizedResponse[]];                      // If there's no matching username, respond with identification failure message.
+    event::event,newEvent[username;req[`body;`description];sessionToken]; // Register the captured event 
+    .jra.jsonResponse ()}]
+```
+
 ### Testing a json rest api
 
 In order to deliver quality software fast, it is widely accepted that developers must write automated tests. It is very easy to do a manual test using postman, however I'd like to present a way to create simple integration tests using lightweight and commonly available tools.

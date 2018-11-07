@@ -93,13 +93,15 @@ unauthorizedResponse:{unauthorizedHeader,"\r\n\r\n"}
 parseCookies:{[cookieHeader]{(`$x 0)!x 1}flip"="vs/:","vs cookieHeader}
 
 // Gets the session cookie from a request
-sessionCookie:{[req]parseCookies[req[`headers;`Cookie]]`sid}
+sessionToken:{[req]parseCookies[req[`headers;`Cookie]]`sid}
 
 // For the given incoming get request url, tries to find a function mapped to that endpoint.
 // It returns the appropriate function mapping request to response.
 matchGetResponder:{[url]
+  -1 "Matching endpoint for url: ",url;
   f:.get.endpoints["/","/"sv 1_"/"vs url]; // First check the non-parameterised endpoints
-  if[100h=type f; :f];
+  if[type[f] in (100h;104h); :f];
+  -1 "Couldn't find direct endpoint";
   if[0=count .get.paramEndpoints; :0N];
   paramMatches:{[url;path].get.matchParams[path;url]}["/","/"sv 1_"/" vs url;] each key .get.paramEndpoints;
   matching:paramMatches where {not 0b~x} each paramMatches;

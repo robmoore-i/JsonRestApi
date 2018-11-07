@@ -18,16 +18,15 @@ k)beginNewUserSession:{[username;sessionToken]![`user;,(=;`name;,username);0b;(,
     .jra.authenticatedJsonResponse[sessionToken;()]}]
 
 // Returns the name of the user currently in a session using the given (sessionToken)
-k)matchUserInSession:{[sessionToken]*:?[`user;,((\:;~);`sessionToken;sessionToken);();`name]}
-
-// Returns true if the given argument is a valid username for the `user table.
-isValidUsername:{not any(null x;1<>count x;(-11h)<>type x)}
+matchUserInSession:{[sessionToken]
+  username:first ?[`user;enlist((\:;~);`sessionToken;sessionToken);();`name];
+  $[all(not null username;1=count username;(-11h)=type username);username;`]}
 
 .post.serve["/event/capture";
   {[req]
-    sessionToken:.jra.sessionCookie req;
+    sessionToken:.jra.sessionToken req;
     username:matchUserInSession sessionToken;
-    if[not isValidUsername username; :.jra.unauthorizedResponse[]];
+    if[null username; :.jra.unauthorizedResponse[]];
     event::event,`timestamp`username`description`sessionToken!(.z.Z;username;req[`body;`description];sessionToken);
     .jra.jsonResponse ()}]
 

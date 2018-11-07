@@ -1,22 +1,23 @@
 import os
+import sys
 import time
 import requests
 from assertpy import assert_that
 
 QHOME = os.environ["QHOME"]
 
-def start_backend_q():
-  os.system(QHOME + "/l32/q backend.q &")
+def start_backend():
+  os.system(QHOME + "/m32/q backend.q &")
 
 
-def kill_backend_q():
-  os.system("pkill -f \"" + QHOME + "/l32/q backend.q\"")
+def kill_backend():
+  os.system("pkill -f \"" + QHOME + "/m32/q backend.q\"")
 
 
 def default_path():
   res = requests.get("http://localhost:8000/")
   assert_that(res.status_code).is_equal_to(200)
-  assert_that(res.json()).is_equal_to("Hello there, my favourite browser:  python-requests/2.19.1")
+  assert_that(res.json()).is_equal_to("Hello there, my favourite browser:  python-requests/2.20.0")
 
 
 def hello():
@@ -97,15 +98,30 @@ def tests():
 
 
 def main():
-    print("=== starting backend ===")
-    start_backend_q()
-    time.sleep(1)
+    print("Running: " + str(sys.argv))
+
+    if len(sys.argv) != 2:
+        print(usage)
+        exit(1)
+    elif sys.argv[1] == "a":  # 'a' is for 'already running'
+        start_server = False
+    elif sys.argv[1] == "r":  # 'r' is for 'run it yourself'
+        start_server = True
+    else:
+        print(usage)
+        exit(1)
+
+    if start_server:
+        print("=== starting backend ===")
+        start_backend()
+        time.sleep(1)
 
     print("=== starting tests ===")
     tests()
 
-    print("=== killing backend ===")
-    kill_backend_q()
+    if start_server:
+        print("=== killing backend ===")
+        stop_backend()
 
     print("=== finished tests ===")
 
