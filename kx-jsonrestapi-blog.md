@@ -14,31 +14,31 @@ When I started writing my implementation of a Q json rest api, I was looking for
 
 1. Query endpoint "http://myserver.com/get/my/data" on the backend
 2. Backend reads a database
-3. Backend responds with JSON containing some records
+3. Backend responds with json containing some records
 
 In this blog post I will discuss how we can use Q to deliver this value extremely quickly.
 
 ## Background - What is the value in json rest apis?
 
-JSON is a lightweight, text-based format for storing data. It stands for "(J)ava(S)cript (O)bject (N)otation". The primary domain of JSON is as a format for transferring data from a server (backend rest api) to a client (javascript frontend). Within this problem-space, JSON competes with formats like XML, however, JSON has a combination of favourable properties:
+JSON is a lightweight, text-based format for storing data. It stands for "(J)ava(S)cript (O)bject (N)otation". The primary domain of json is as a format for transferring data from a server (backend rest api) to a client (javascript frontend). Within this problem-space, json competes with formats like xml, however, json has a combination of favourable properties:
 
-1. JSON can be parsed as a Javascript object
-2. JSON is lightweight
-3. JSON is more human readable
+1. json can be parsed as a Javascript object
+2. json is lightweight
+3. json is more human readable
 
 We want our frontends to be responsive. It makes sense then, that we would favour a data-format which parses straight into Javascript. An additional benefit is that for simple data, its non-verbosity in comparison to alternatives makes it relatively efficient to communicate over the network.
 
-Having a more human readable format helps the development team design and deliver their API faster than they would otherwise, an advantage that is worth noting even though "human readable-ness" is not a property that has many hard metrics associated with it.
+Having a more human readable format helps the development team design and deliver their api faster than they would otherwise, an advantage that is worth noting even though "human readable-ness" is not a property that has many hard metrics associated with it.
 
 ## Motivation - Why would we use Q for providing a json rest api?
 
-Q is an intuitive choice to provide this behaviour, because it supports persistence, JSON parsing and HTTP request handling, out-of-the-box and within an already very expressive programming language. By using a lightweight Q implementation, we can write less code, which will enable us to adapt our backend to changing requirements faster and deliver value faster.
+Q is an intuitive choice to provide this behaviour, because it supports persistence, json parsing and HTTP request handling, out-of-the-box and within an already very expressive programming language. By using a lightweight Q implementation, we can write less code, which will enable us to adapt our backend to changing requirements faster and deliver value faster.
 
 ## Implementation
 
 Q provides built in solutions for both handling HTTP requests and making database accesses. Our aim is to model the server as a function. These functions can be thought of as having the signature `Endpoint -> Request -> Response` - that is, they map and endpoint to a function which receives a request and returns a response.
 
-The code I've produced presents the following API.
+The code I've produced presents the following api.
 
 ```
 .get.serve[endpoint;func]  // endpoint is a URL path, func is a unary function taking a HTTP request and returning a HTTP response.
@@ -66,7 +66,7 @@ Post request endpoints can contain a json message body. This is parsed and made 
   }]
 ```
 
-Once all of the API endpoints have been defined, all that's left is to tell the process to listen on a specific port. For example:
+Once all of the api endpoints have been defined, all that's left is to tell the process to listen on a specific port. For example:
 
 ```
 .jra.listen 8000
@@ -78,13 +78,13 @@ For a demonstration, we'll pretend we're writing a server for capturing webpage 
 
 ### Requirements
 
-Below is a quick outline of the simple functionality our server will support. It needs to identify users and capture events that take place in the webpage. Our UI/UX engineers will also surely need to use our captured analytics, so we'll need to support an API for serving the stored data as well.
+Below is a quick outline of the simple functionality our server will support. It needs to identify users and capture events that take place in the webpage. Our UI/UX engineers will also surely need to use our captured analytics, so we'll need to support an api for serving the stored data as well.
 
 ```
 // Identifies a user by username and gives them a cookie to track their actions within the context of their current session.
 Route: /identify
 Method: POST
-POST Body: Json of the form {username: `username`}
+POST Body: JSON of the form {username: `username`}
 Function: Checks if the given username is stored on the server and if it is, returns a session token.
 Note: I have omitted the use of a password for this endpoint specifically to avoid conveying any illusion of robust security over plain HTTP.
 
@@ -92,7 +92,7 @@ Note: I have omitted the use of a password for this endpoint specifically to avo
 Route: /events/capture
 Method: POST
 Cookie: Requires valid session token
-POST Body: JSON: {eventName: `event name`}
+POST Body: JSON: {description: `event description`}
 Function: Store the data associated with the event recorded by the web page.
 
 // Lets our UI/UX engineers access the data
@@ -176,7 +176,7 @@ The endpoint looks like this:
 
 #### The /event/get/:username endpoint
 
-We also need to provide an API (however primitive) for accessing the captured data. For the purposes of this demo, getting events by username will do.
+We also need to provide an api for accessing the captured data. For the purposes of this demonstration, getting events by username will do.
 
 We'll have a local function to perform the query on the server:
 
@@ -230,8 +230,8 @@ When requests arrive at the server, the world is stopped for the duration of the
 
 [.z.pm - HTTP OPTIONS](https://code.kx.com/q/ref/dotz/#zpm-http-options)
 
-[.j.j - Serialize into JSON](https://code.kx.com/q/ref/dotj/#jj-serialize)
+[.j.j - Serialize into json](https://code.kx.com/q/ref/dotj/#jj-serialize)
 
-[.j.k - Deserialize from JSON](https://code.kx.com/q/ref/dotj/#jk-deserialize)
+[.j.k - Deserialize from json](https://code.kx.com/q/ref/dotj/#jk-deserialize)
 
 [-E - enable TLS server mode](https://code.kx.com/q/cookbook/ssl/#tls-server-mode)
