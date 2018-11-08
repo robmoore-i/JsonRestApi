@@ -9,6 +9,8 @@ from assertpy import assert_that
 def test(test_function):
     def test_wrapper():
         test_function()
+
+    test_wrapper.__basename__ = test_function.__name__
     return test_wrapper
 
 QHOME = os.environ["QHOME"]
@@ -104,24 +106,38 @@ def get_test_functions(local_values):
     return test_functions
 
 def run_test(test):
-  print("\n")
-  print("Running: " + test.__name__)
-  print("\n")
+  print("=== === ===")
+  print("Running: " + test.__basename__)
   try:
     test()
-    print("\n")
-    print(colored("- " + test.__name__ + " - pass", "green"))
-    print("\n")
+    print(colored("- " + test.__basename__ + " - pass", "green"))
+    print("=== === ===")
     return True
   except AssertionError as e:
-    print("\n")
     print(colored(str(e), "red"))
-    print("\n")
-    print(colored("- " + test.__name__ + " - fail", "red"))
-    print("\n")
+    print(colored("- " + test.__basename__ + " - fail", "red"))
+    print("=== === ===")
     return False
 
 usage = "USAGE: " + sys.argv[0] + " [a|r]\na => don't start the server because it's (a)lready running.\nr => (r)un the server."
+
+def run_tests(local_values):
+    results = {}
+    for test_function in get_test_functions(local_values):
+        result = run_test(test_function)
+        results[test_function.__basename__] = result
+
+    return results
+
+def print_results(results):
+    print("=== results ===\n")
+    for test_function_name in results:
+        if results[test_function_name]:
+            print(colored("- " + test_function_name + " - pass", "green"))
+        else:
+            print(colored("- " + test_function_name + " - fail", "red"))
+
+    print("")
 
 def main(local_values):
     print("Running: " + str(sys.argv))
@@ -143,8 +159,8 @@ def main(local_values):
         time.sleep(1)
 
     print("=== starting tests ===")
-    for test_function in get_test_functions(local_values):
-        run_test(test_function)
+    results = run_tests(local_values)
+    print_results(results)
 
     if start_server:
         print("=== killing backend ===")
