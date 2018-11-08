@@ -20,15 +20,15 @@ In this blog post I will discuss how we can use Q to deliver this extremely quic
 
 ## Background - What is the value in json rest apis?
 
-JSON is a lightweight, text-based format for storing data. It stands for "(J)ava(S)cript (O)bject (N)otation". The primary domain of JSON is as a format for transferring data from a server (backend rest api) to a client (javascript frontend). Within this problem-space, JSON competes with formats like XML and yaml, however, JSON has a combination of favourable properties:
+JSON is a lightweight, text-based format for storing data. It stands for "(J)ava(S)cript (O)bject (N)otation". The primary domain of JSON is as a format for transferring data from a server (backend rest api) to a client (javascript frontend). Within this problem-space, JSON competes with formats like XML, however, JSON has a combination of favourable properties:
 
 1. JSON can be parsed as a Javascript object
 2. JSON is lightweight
-3. JSON is human readable
+3. JSON is more human readable
 
 We want our frontends to be responsive. It makes sense then, that we would favour a data-format which parses straight into Javascript. An additional benefit is that for simple data, its non-verbosity in comparison to alternatives makes it relatively efficient to communicate over the network.
 
-Having a human readable format helps the development team design and deliver their API faster than they would otherwise, an advantage that is worth noting even though "human readable-ness" is not a property that has many hard metrics associated with it.
+Having a more human readable format helps the development team design and deliver their API faster than they would otherwise, an advantage that is worth noting even though "human readable-ness" is not a property that has many hard metrics associated with it.
 
 ## Motivation - Why would we use Q for providing a json rest api?
 
@@ -174,9 +174,43 @@ The endpoint looks like this:
     .jra.jsonResponse ()}]
 ```
 
-### Testing a json rest api
+#### The /event/get/:username endpoint
 
-In order to deliver quality software fast, it is widely accepted that developers must write automated tests. It is very easy to do a manual test using postman, however I'd like to present a way to create simple integration tests using lightweight and commonly available tools.
+We also need to provide an API (however primitive) for accessing the captured data. For the purposes of this demo, getting events by username will do.
+
+We'll have a local function to perform the query on the server:
+
+```
+k)getUserEvents:{[username]?[`event;,(=;`username;,username);0b;()]}
+```
+
+All the endpoint does it take the username from the request, feed it to the prepared query and regurgitate the results in the response.
+
+```
+.get.serve["/event/get/:username";
+  {[req]
+    username:`$req[`params;`username]; // Extract the username from the request
+    events:getUserEvents username;     // Perform the query to get the requested data
+    .jra.jsonResponse events}]         // Return the data as JSON in the response
+```
+
+#### Starting the server
+
+At the end of our file that specifies our server, we need to finally tell it to use the provided API specification to listen on a port.
+
+```
+.jra.listen 8000
+```
+
+At this point we can query it as we like. We can have this as a live system, or we might just be starting it up to run some integration tests on it.
+
+###Testing a json rest api
+
+///// WIP
+
+In order to deliver quality software fast, it is widely accepted that developers must write automated tests. It is very easy to do a manual test using postman or some command line tools like curl, however, writing programmatic tests will assist not only in ensuring the quality of the resulting software but actually aid you in the design of the API. As you write your tests your assumptions will be exposed in your need for observable and explicit behaviour, enabling you to create more useful APIs.
+
+I find that a befittingly simple and lightweight way of determining if your json rest api fits the required specification is to iteratively write the specification as a growing integration test.
 
 ### Handling preflight requests using HTTP OPTIONS
 
