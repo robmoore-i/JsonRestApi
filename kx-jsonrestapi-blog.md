@@ -36,7 +36,7 @@ Q is an intuitive choice to provide this behaviour, because it supports persiste
 
 ## Implementation
 
-Q provides built in solutions for both handling HTTP requests and making database accesses. Our aim is to model the server as a function. These functions can be thought of as having the signiture `Endpoint -> Request -> Response` - that is, they map and endpoint to a function which recieves a request and returns a response.
+Q provides built in solutions for both handling HTTP requests and making database accesses. Our aim is to model the server as a function. These functions can be thought of as having the signature `Endpoint -> Request -> Response` - that is, they map and endpoint to a function which receives a request and returns a response.
 
 The code I've produced presents the following API.
 
@@ -74,7 +74,7 @@ Once all of the API endpoints have been defined, all that's left is to tell the 
 
 ## Demonstration of a real world use-case: Web analytics
 
-For a demonstration, we'll pretend we're writing a server for capturing webpage analytics, that is, how users are interacting with a firm's webpages. Web analytics is, fundementally, a tick data capture service, which is why I've chosen to use it for this example. Even though it's not real, this example serves to demonstrate the real value of being able to rapidly create json rest apis in Q, as well as showing the major features of this piece of code I wrote.
+For a demonstration, we'll pretend we're writing a server for capturing webpage analytics, that is, how users are interacting with a firm's webpages. Web analytics is, fundamentally, a tick data capture service, which is why I've chosen to use it for this example. Even though it's not real, this example serves to demonstrate the real value of being able to rapidly create json rest apis in Q, as well as showing the major features of this piece of code I wrote.
 
 ### Requirements
 
