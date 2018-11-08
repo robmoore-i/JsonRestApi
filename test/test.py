@@ -10,7 +10,7 @@ def start_backend():
   os.system(QHOME + "/m32/q backend.q &")
 
 
-def kill_backend():
+def stop_backend():
   os.system("pkill -f \"" + QHOME + "/m32/q backend.q\"")
 
 
@@ -96,6 +96,7 @@ def tests():
   run_test("path_args", path_args)
   run_test("path_args_with_cookies", path_args_with_cookies)
 
+usage = "USAGE: " + sys.argv[0] + " [a|r]\na => don't start the server because it's (a)lready running.\nr => (r)un the server."
 
 def main():
     print("Running: " + str(sys.argv))
