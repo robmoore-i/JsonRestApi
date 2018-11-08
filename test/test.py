@@ -6,6 +6,11 @@ import requests
 from termcolor import colored
 from assertpy import assert_that
 
+def test(test_function):
+    def test_wrapper():
+        test_function()
+    return test_wrapper
+
 QHOME = os.environ["QHOME"]
 
 def start_backend():
@@ -16,30 +21,35 @@ def stop_backend():
   os.system("pkill -f \"" + QHOME + "/l32/q backend.q\"")
 
 
+@test
 def default_path():
   res = requests.get("http://localhost:8000/")
   assert_that(res.status_code).is_equal_to(200)
-  assert_that(res.json()).is_equal_to("Hello there, my favourite browser:  python-requests/2.20.0")
+  assert_that(res.json()).is_equal_to("Hello there, my favourite browser:  python-requests/2.20.1")
 
 
+@test
 def hello():
   res = requests.get("http://localhost:8000/hello")
   assert_that(res.status_code).is_equal_to(200)
   assert_that(res.json()).is_equal_to("hello")
 
 
+@test
 def json():
   res = requests.get("http://localhost:8000/json")
   assert_that(res.status_code).is_equal_to(200)
   assert_that(res.json()).is_equal_to({"a":1,"b":2,"c":3})
 
 
+@test
 def goodbye():
   res = requests.post("http://localhost:8000/goodbye", json={"name":"python"})
   assert_that(res.status_code).is_equal_to(200)
   assert_that(res.json()).is_equal_to("Goodbye now python")
 
 
+@test
 def cookie():
   session = requests.Session()
   res = session.get("http://localhost:8000/cookie")
@@ -48,6 +58,7 @@ def cookie():
   assert_that(session.cookies.get_dict()).is_equal_to({"sid":"s355IonT0k3n"})
 
 
+@test
 def cors():
   # The preflight request must pass
   headers = { "access-control-request-method": "GET" , "access-control-request-headers": "Content-Type" }
@@ -63,12 +74,14 @@ def cors():
   assert_that(get.status_code).is_equal_to(200)
 
 
+@test
 def path_args():
   res = requests.get("http://localhost:8000/pathargs/one/two")
   assert_that(res.status_code).is_equal_to(200)
   assert_that(res.json()).is_equal_to("pathargs -> one -> two")
 
 
+@test
 def path_args_with_cookies():
   session = requests.Session()
   res = session.get("http://localhost:8000/cookie")
@@ -79,6 +92,16 @@ def path_args_with_cookies():
   assert_that(res.status_code).is_equal_to(200)
   assert_that(res.json()).is_equal_to("pathargs -> one -> two")
 
+
+def get_test_functions(local_values):
+    test_functions = []
+    local_function_names = [name for name in local_values if local_values[name].__class__.__name__ == "function"]
+    for function_name in local_function_names:
+        function = local_values[function_name]
+        if function.__name__ == "test_wrapper":
+            test_functions.append(function)
+
+    return test_functions
 
 def run_test(test):
   print("\n")
@@ -98,20 +121,9 @@ def run_test(test):
     print("\n")
     return False
 
-
-def tests():
-  run_test(default_path)
-  run_test(hello)
-  run_test(json)
-  run_test(goodbye)
-  run_test(cookie)
-  run_test(cors)
-  run_test(path_args)
-  run_test(path_args_with_cookies)
-
 usage = "USAGE: " + sys.argv[0] + " [a|r]\na => don't start the server because it's (a)lready running.\nr => (r)un the server."
 
-def main():
+def main(local_values):
     print("Running: " + str(sys.argv))
 
     if len(sys.argv) != 2:
@@ -131,7 +143,8 @@ def main():
         time.sleep(1)
 
     print("=== starting tests ===")
-    tests()
+    for test_function in get_test_functions(local_values):
+        run_test(test_function)
 
     if start_server:
         print("=== killing backend ===")
@@ -140,5 +153,5 @@ def main():
     print("=== finished tests ===")
 
 
-main()
+main(locals())
 exit(0)
