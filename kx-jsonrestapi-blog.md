@@ -5,8 +5,8 @@
 2. Motivation - Why would we use Q for providing a json rest api?
 3. Implementation
 4. Demonstration of a real world use-case: Web analytics
-5. Future work: HTTPS
-6. References
+5. Future work
+6. Helpful links
 
 ## Introduction
 
@@ -16,7 +16,7 @@ When I started writing my implementation of a Q json rest api, I was looking for
 2. Backend reads a database
 3. Backend responds with JSON containing some records
 
-In this blog post I will discuss how we can use Q to deliver this extremely quickly.
+In this blog post I will discuss how we can use Q to deliver this value extremely quickly.
 
 ## Background - What is the value in json rest apis?
 
@@ -36,7 +36,7 @@ Q is an intuitive choice to provide this behaviour, because it supports persiste
 
 ## Implementation
 
-Q provides built in solutions for both handling HTTP requests and making database accesses. Our aim is to model the server as a function. These functions have the signiture `Endpoint -> Request -> Response`.
+Q provides built in solutions for both handling HTTP requests and making database accesses. Our aim is to model the server as a function. These functions can be thought of as having the signiture `Endpoint -> Request -> Response` - that is, they map and endpoint to a function which recieves a request and returns a response.
 
 The code I've produced presents the following API.
 
@@ -74,7 +74,7 @@ Once all of the API endpoints have been defined, all that's left is to tell the 
 
 ## Demonstration of a real world use-case: Web analytics
 
-For a demonstration, we'll write a simple server for capturing webpage analytics. It is valueable for a business to be able to monitor how users are using their webpages. For this reason, a server for capturing real time web analytics is an important piece of software to have for evolving a widely used frontend. Web analytics is, fundementally, a tick data capture service, which is why I've chosen to use it for this example.
+For a demonstration, we'll pretend we're writing a server for capturing webpage analytics, that is, how users are interacting with a firm's webpages. Web analytics is, fundementally, a tick data capture service, which is why I've chosen to use it for this example. Even though it's not real, this example serves to demonstrate the real value of being able to rapidly create json rest apis in Q, as well as showing the major features of this piece of code I wrote.
 
 ### Requirements
 
@@ -204,36 +204,34 @@ At the end of our file that specifies our server, we need to finally tell it to 
 
 At this point we can query it as we like. We can have this as a live system, or we might just be starting it up to run some integration tests on it.
 
-###Testing a json rest api
-
-///// WIP
-
-In order to deliver quality software fast, it is widely accepted that developers must write automated tests. It is very easy to do a manual test using postman or some command line tools like curl, however, writing programmatic tests will assist not only in ensuring the quality of the resulting software but actually aid you in the design of the API. As you write your tests your assumptions will be exposed in your need for observable and explicit behaviour, enabling you to create more useful APIs.
-
-I find that a befittingly simple and lightweight way of determining if your json rest api fits the required specification is to iteratively write the specification as a growing integration test.
-
 ### Handling preflight requests using HTTP OPTIONS
 
 Web browsers often perform a preflight request to a web server to validate a request for cross origin resource sharing, which is where the browser confirms that the requested resource is intended for the client. If it isn't, then the user may be at risk of becoming a victim of a cross-site scripting (XSS) attack. To handle the preflight request, a web server looking to provide dynamic data to a frontend must implement a HTTP OPTIONS response. In Q, this can be done very easily by using `.z.pm`.
 
 ## Future work
 
-HTTPS
+These are topics which are beyond the scope of this article, but would be very likely required in a production system.
 
-Asynchronous execution
+#### HTTPS
 
-## Further reading
+By setting some environment variables and using the -E command line flag with the appropriate argument, you can enable a Q process to run in TLS server mode, which will cause it to communicate using HTTPS rather than HTTP. I've included a link to the relevant section of the reference in the links section at the end.
 
-### HTTP
+#### Asynchronous execution
 
-.z.ph - HTTP GET
-.z.pp - HTTP POST
-.z.ac - Authenticate from cookie
-.z.pm - HTTP OPTIONS
+When requests arrive at the server, the world is stopped for the duration of the construction of the response, including during the query. It is fortunate that Q is so fast, but in general we would much rather implement some kind of job queue with worker threads picking requests off the queue and responding individually to enable concurrent responses. This would also demand the specification of a consistency model for the database, as well as the required specification.
 
-## JSON
+## Helpful links
 
-.j.j - Serialize into JSON
-.j.k - Deserialize from JSON
+[.z.ph - HTTP GET](https://code.kx.com/q/ref/dotz/#zph-http-get)
 
-## References
+[.z.pp - HTTP POST](https://code.kx.com/q/ref/dotz/#zpp-http-post)
+
+[.z.ac - Authenticate from cookie](https://code.kx.com/q/ref/dotz/#zac-http-auth-from-cookie)
+
+[.z.pm - HTTP OPTIONS](https://code.kx.com/q/ref/dotz/#zpm-http-options)
+
+[.j.j - Serialize into JSON](https://code.kx.com/q/ref/dotj/#jj-serialize)
+
+[.j.k - Deserialize from JSON](https://code.kx.com/q/ref/dotj/#jk-deserialize)
+
+[-E - enable TLS server mode](https://code.kx.com/q/cookbook/ssl/#tls-server-mode)
