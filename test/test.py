@@ -2,16 +2,18 @@ import os
 import sys
 import time
 import requests
+
+from termcolor import colored
 from assertpy import assert_that
 
 QHOME = os.environ["QHOME"]
 
 def start_backend():
-  os.system(QHOME + "/m32/q backend.q &")
+  os.system(QHOME + "/l32/q backend.q &")
 
 
 def stop_backend():
-  os.system("pkill -f \"" + QHOME + "/m32/q backend.q\"")
+  os.system("pkill -f \"" + QHOME + "/l32/q backend.q\"")
 
 
 def default_path():
@@ -78,23 +80,34 @@ def path_args_with_cookies():
   assert_that(res.json()).is_equal_to("pathargs -> one -> two")
 
 
-def run_test(test_name, test):
+def run_test(test):
+  print("\n")
+  print("Running: " + test.__name__)
+  print("\n")
   try:
-    print("- " + test_name)
     test()
+    print("\n")
+    print(colored("- " + test.__name__ + " - pass", "green"))
+    print("\n")
+    return True
   except AssertionError as e:
-    print("fail\n\t" + str(e))
+    print("\n")
+    print(colored(str(e), "red"))
+    print("\n")
+    print(colored("- " + test.__name__ + " - fail", "red"))
+    print("\n")
+    return False
 
 
 def tests():
-  run_test("default_path", default_path)
-  run_test("hello", hello)
-  run_test("json", json)
-  run_test("goodbye", goodbye)
-  run_test("cookie", cookie)
-  run_test("cors", cors)
-  run_test("path_args", path_args)
-  run_test("path_args_with_cookies", path_args_with_cookies)
+  run_test(default_path)
+  run_test(hello)
+  run_test(json)
+  run_test(goodbye)
+  run_test(cookie)
+  run_test(cors)
+  run_test(path_args)
+  run_test(path_args_with_cookies)
 
 usage = "USAGE: " + sys.argv[0] + " [a|r]\na => don't start the server because it's (a)lready running.\nr => (r)un the server."
 
