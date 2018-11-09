@@ -6,10 +6,10 @@ from assertpy import assert_that
 
 QHOME = os.environ["QHOME"]
 
-def start_backend():
+def start_server():
   os.system(QHOME + "/l32/q backend.q &")
 
-def stop_backend():
+def stop_server():
   os.system("pkill -f \"" + QHOME + "/l32/q backend.q\"")
 
 @test
@@ -83,5 +83,5 @@ def path_args_with_cookies():
   assert_that(res.status_code).is_equal_to(200)
   assert_that(res.json()).is_equal_to("pathargs -> one -> two")
 
-main(locals(), start_backend, stop_backend)
+main(locals(), start_server, stop_server)
 exit(0)
