@@ -15,8 +15,15 @@ addEndpoint:{[curEndpoints;path;f]
 
 \d .get
 
+queryparams:{
+  split:"?"vs x;
+  if[1=count split; :0N];
+  -1 "Found url query parameters";
+  params:raze 1_split;
+  (!)over flip `$"="vs/:"&"vs params}
+
 // Create a GET request dictionary from the dictionary passed to .z.ph
-request:{`url`headers!(((x[1]`Host),"/",x 0);x 1)}
+request:{`url`headers`queryparams!((url:(x[1]`Host),"/",x 0);x 1;queryparams x 0)}
 
 // At the start, there are no assigned GET endpoints
 endpoints:()!()
@@ -32,7 +39,7 @@ matchParams:{[apipath;reqpath]
   actEqAt:where {.[~;x]} each 1_flip "/" vs/: (apipath;reqpath);
   if[not expEqAt~actEqAt; :0b ];
   argsAt:where ":"=first each 1_"/" vs apipath;
-  `path`params!(apipath;{(`$1_/:x[0])!x[1]}("/"vs/:(apipath;reqpath))@\:1+argsAt)}
+  `path`pathparams!(apipath;{(`$1_/:x[0])!x[1]}("/"vs/:(apipath;reqpath))@\:1+argsAt)}
 
 // Associate a GET endpoint with a function
 serve:{[path;f]
@@ -55,6 +62,10 @@ endpoints:()!()
 serve:{[path;f]endpoints,: .jra.addEndpoint[endpoints;path;f];}
 
 ////// General
+
+\d .url
+
+path:{first "?" vs "/","/"sv 1_"/"vs x}
 
 \d .jra
 
@@ -99,7 +110,7 @@ sessionToken:{[req]parseCookies[req[`headers;`Cookie]]`sid}
 // It returns the appropriate function mapping request to response.
 matchGetResponder:{[url]
   -1 "Matching endpoint for url: ",url;
-  f:.get.endpoints["/","/"sv 1_"/"vs url]; // First check the non-parameterised endpoints
+  f:.get.endpoints[.url.path url]; // First check the non-parameterised endpoints
   if[type[f] in (100h;104h); :f];
   -1 "Couldn't find direct endpoint";
   if[0=count .get.paramEndpoints; :0N];
@@ -107,25 +118,27 @@ matchGetResponder:{[url]
   matching:paramMatches where {not 0b~x} each paramMatches;
   if[0=count matching; :0N];
   match:first matching;
-  `f`params!(.get.paramEndpoints[match`path];match`params);
+  `f`pathparams!(.get.paramEndpoints[match`path];match`pathparams);
   f:.get.paramEndpoints[match`path];
-  params:match`params;
+  params:match`pathparams;
   {[f;params;req]
-    f[req,(enlist `params)!enlist params]}[f;params;]}
+    f[req,(enlist `pathparams)!enlist params]}[f;params;]}
 
 // Start listening using the current endpoints on the given port
 listen:{[p]
   .z.ph::{
+    rawgetreq::x;
     getreq::.get.request x;
     -1 "Received GET";
     -1 .j.j getreq;
     f::matchGetResponder getreq.url;
-    -1 "Matched endpoint";
+    if[not 0N~f;-1 "Matched endpoint"];
     getres::$[ 0N~f ; jsonResponse "none" ;  f getreq ];
     -1 "Sending response";
     -1 getres;
     getres};
   .z.pp::{
+    rawpostreq::x;
     postreq::.post.request x;
     -1 "Received POST";
     -1 .j.j postreq;
@@ -135,6 +148,7 @@ listen:{[p]
     -1 postres;
     postres};
   .z.pm::{
+    rawoptreq::x;
     optreq::`path`headers!(x 1;x 2);
     -1 "Received OPTIONS";
     -1 .j.j optreq;

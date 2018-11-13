@@ -7,10 +7,10 @@ from assertpy import assert_that
 QHOME = os.environ["QHOME"]
 
 def start_server():
-  os.system(QHOME + "/l32/q backend.q &")
+  os.system(QHOME + "/m32/q backend.q &")
 
 def stop_server():
-  os.system("pkill -f \"" + QHOME + "/l32/q backend.q\"")
+  os.system("pkill -f \"" + QHOME + "/m32/q backend.q\"")
 
 @test
 def default_path():
@@ -18,13 +18,11 @@ def default_path():
   assert_that(res.status_code).is_equal_to(200)
   assert_that(res.json()).is_equal_to("Hello there, my favourite browser:  python-requests/2.20.1")
 
-
 @test
 def hello():
   res = requests.get("http://localhost:8000/hello")
   assert_that(res.status_code).is_equal_to(200)
   assert_that(res.json()).is_equal_to("hello")
-
 
 @test
 def json():
@@ -32,13 +30,11 @@ def json():
   assert_that(res.status_code).is_equal_to(200)
   assert_that(res.json()).is_equal_to({"a":1,"b":2,"c":3})
 
-
 @test
 def goodbye():
   res = requests.post("http://localhost:8000/goodbye", json={"name":"python"})
   assert_that(res.status_code).is_equal_to(200)
   assert_that(res.json()).is_equal_to("Goodbye now python")
-
 
 @test
 def cookie():
@@ -47,7 +43,6 @@ def cookie():
   assert_that(res.status_code).is_equal_to(200)
   assert_that(res.json()).is_equal_to("Check your cookies!")
   assert_that(session.cookies.get_dict()).is_equal_to({"sid":"s355IonT0k3n"})
-
 
 @test
 def cors():
@@ -64,13 +59,11 @@ def cors():
   assert_that(get.headers["Access-Control-Allow-Origin"]).is_equal_to("http://localhost:3000")
   assert_that(get.status_code).is_equal_to(200)
 
-
 @test
 def path_args():
-  res = requests.get("http://localhost:8000/pathargs/one/two")
+  res = requests.get("http://localhost:8000/pathparams/one/two")
   assert_that(res.status_code).is_equal_to(200)
-  assert_that(res.json()).is_equal_to("pathargs -> one -> two")
-
+  assert_that(res.json()).is_equal_to("pathparams -> one -> two")
 
 @test
 def path_args_with_cookies():
@@ -79,9 +72,18 @@ def path_args_with_cookies():
   assert_that(res.status_code).is_equal_to(200)
   assert_that(res.json()).is_equal_to("Check your cookies!")
   assert_that(session.cookies.get_dict()).is_equal_to({"sid":"s355IonT0k3n"})
-  res = session.get("http://localhost:8000/pathargs/one/two")
+  res = session.get("http://localhost:8000/pathparams/one/two")
   assert_that(res.status_code).is_equal_to(200)
-  assert_that(res.json()).is_equal_to("pathargs -> one -> two")
+  assert_that(res.json()).is_equal_to("pathparams -> one -> two")
+
+@test
+def query_params():
+  res = requests.get("http://localhost:8000/queryparams?param1=x&param2=y")
+  assert_that(res.status_code).is_equal_to(200)
+  assert_that(res.json()).is_equal_to({
+    "param1": "x",
+    "param2": "y"
+  })
 
 main(locals(), start_server, stop_server)
 exit(0)

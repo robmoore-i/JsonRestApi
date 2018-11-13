@@ -24,8 +24,12 @@
   .res.ok {[req]
     "This response has been OKed by the server"}]
 
-.get.serve["/pathargs/:a/:b";
+.get.serve["/pathparams/:a/:b";
   .res.ok {[req]
-    "pathargs -> " , req[`params;`a] , " -> " , req[`params;`b]}]
+    "pathparams -> " , req[`pathparams;`a] , " -> " , req[`pathparams;`b]}]
+
+.get.serve["/queryparams";
+  .res.ok {[req]
+    req[`queryparams]}]
 
 .jra.listen 8000
