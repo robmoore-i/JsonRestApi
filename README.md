@@ -44,7 +44,7 @@ This file can be found in the test/ directory of this repository.
 
 .get.serve["/pathargs/:a/:b";
   .res.ok {[req]
-    "pathargs -> " , req[`params;`a] , " -> " , req[`params;`b]}]
+    "pathargs -> " , req[`pathparams;`a] , " -> " , req[`pathparams;`b]}]
 
 .jra.listen 8000
 ```
