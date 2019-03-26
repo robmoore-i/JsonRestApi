@@ -109,6 +109,7 @@ sessionToken:{[req]parseCookies[req[`headers;`Cookie]]`sid}
 // For the given incoming get request url, tries to find a function mapped to that endpoint.
 // It returns the appropriate function mapping request to response.
 matchGetResponder:{[url]
+  url:first"?"vs url;
   -1 "Matching endpoint for url: ",url;
   f:.get.endpoints[.url.path url]; // First check the non-parameterised endpoints
   if[type[f] in (100h;104h); :f];
