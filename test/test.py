@@ -1,5 +1,6 @@
 import os
 import requests
+import re
 
 from rest_test import *
 from assertpy import assert_that
@@ -16,7 +17,9 @@ def stop_server():
 def default_path():
   res = requests.get("http://localhost:8000/")
   assert_that(res.status_code).is_equal_to(200)
-  assert_that(res.json()).is_equal_to("Hello there, my favourite browser:  python-requests/2.20.1")
+
+  expected_pattern = re.compile("Hello there, my favourite browser:  python-requests/2\.[0-9][0-9]\.[0-9]")
+  assert_that(expected_pattern.match(res.json())).is_not_none()
 
 @test
 def hello():
@@ -85,5 +88,5 @@ def query_params():
     "param2": "y"
   })
 
-main(locals(), start_server, stop_server)
+main(locals())
 exit(0)
