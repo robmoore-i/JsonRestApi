@@ -11,6 +11,14 @@ addEndpoint:{[curEndpoints;path;f]
   path:$[1=count path;enlist path;path];
   curEndpoints , (enlist path)!enlist f}
 
+////// OPTION REQUESTS
+
+\d .option
+
+// Create an OPTION request dictionary from the dictionary passed to .z.pm
+request:{`path`headers!(x 1;(!).(lower key@;value)@\:x 2)}
+
+
 ////// GET REQUESTS
 
 \d .get
@@ -23,7 +31,7 @@ queryparams:{
   (!)over flip `$"="vs/:"&"vs params}
 
 // Create a GET request dictionary from the dictionary passed to .z.ph
-request:{`url`headers`queryparams!((url:(x[1]`Host),"/",x 0);x 1;queryparams x 0)}
+request:{`url`headers`queryparams!((url:(x[1]`Host),"/",x 0);(!).(lower key@;value)@\:x 1;queryparams x 0)}
 
 // At the start, there are no assigned GET endpoints
 endpoints:()!()
@@ -53,7 +61,7 @@ serve:{[path;f]
 \d .post
 
 // Create a POST request dictionary from the dictionary passed to .z.pp
-request:{s:" " vs x 0;`url`headers`body!(((x[1]`Host),"/",s 0);x 1;.j.k raze 1_s)}
+request:{s:" " vs x 0;`url`headers`body!(((x[1]`Host),"/",s 0);(!).(lower key@;value)@\:x 1;.j.k raze 1_s)}
 
 // At the start, there are no assigned POST endpoints
 endpoints:()!()
@@ -150,7 +158,7 @@ listen:{[p]
     postres};
   .z.pm::{
     rawoptreq::x;
-    optreq::`path`headers!(x 1;x 2);
+    optreq::.option.request x;
     -1 "Received OPTIONS";
     -1 .j.j optreq;
     method:$[ ""~m:optreq[`headers;`$"access-control-request-method"] ; "GET" ; m ];
