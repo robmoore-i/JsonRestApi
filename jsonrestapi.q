@@ -61,7 +61,7 @@ serve:{[path;f]
 \d .post
 
 // Create a POST request dictionary from the dictionary passed to .z.pp
-request:{s:" " vs x 0;`url`headers`body!(((x[1]`Host),"/",s 0);(!).(lower key@;value)@\:x 1;.j.k raze 1_s)}
+request:{s:" " vs x 0;`url`headers`body!(((x[1]`Host),"/",s 0);(!).(lower key@;value)@\:x 1;.j.k " " sv 1_s)}
 
 // At the start, there are no assigned POST endpoints
 endpoints:()!()
